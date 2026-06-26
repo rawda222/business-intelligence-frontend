@@ -1,0 +1,368 @@
+export type Locale = "en" | "ar";
+
+type Entry = { en: string; ar: string };
+
+/**
+ * Translation dictionary. Covers navigation, auth, dashboard, businesses,
+ * upload, SWOT, strategy, campaigns, history, settings.
+ * Mixed Arabic + English content keys are intentionally bilingual.
+ */
+export const translations = {
+  /* ---- meta ---- */
+  "app.name": { en: "Business Intelligence Platform", ar: "منصة ذكاء الأعمال" },
+  "app.tagline": {
+    en: "Multi-Agent AI for business analysis",
+    ar: "ذكاء اصطناعي متعدد الوكلاء لتحليل الأعمال",
+  },
+
+  /* ---- nav ---- */
+  "nav.dashboard": { en: "Dashboard", ar: "لوحة التحكم" },
+  "nav.businesses": { en: "Businesses", ar: "الشركات" },
+  "nav.upload": { en: "Upload Reviews", ar: "رفع المراجعات" },
+  "nav.history": { en: "Report History", ar: "سجل التقارير" },
+  "nav.settings": { en: "Settings", ar: "الإعدادات" },
+  "nav.section.workspace": { en: "Workspace", ar: "مساحة العمل" },
+  "nav.section.reports": { en: "Reports", ar: "التقارير" },
+  "nav.section.system": { en: "System", ar: "النظام" },
+
+  /* ---- common ---- */
+  "common.loading": { en: "Loading…", ar: "جارٍ التحميل…" },
+  "common.save": { en: "Save", ar: "حفظ" },
+  "common.cancel": { en: "Cancel", ar: "إلغاء" },
+  "common.create": { en: "Create", ar: "إنشاء" },
+  "common.open": { en: "Open", ar: "فتح" },
+  "common.view": { en: "View", ar: "عرض" },
+  "common.run": { en: "Run", ar: "تشغيل" },
+  "common.export": { en: "Export PDF", ar: "تصدير PDF" },
+  "common.refresh": { en: "Refresh", ar: "تحديث" },
+  "common.back": { en: "Back", ar: "رجوع" },
+  "common.search": { en: "Search…", ar: "بحث…" },
+  "common.all": { en: "All", ar: "الكل" },
+  "common.none": { en: "None", ar: "لا شيء" },
+  "common.required": { en: "Required", ar: "مطلوب" },
+  "common.optional": { en: "Optional", ar: "اختياري" },
+  "common.retry": { en: "Retry", ar: "إعادة المحاولة" },
+  "common.new": { en: "New", ar: "جديد" },
+  "common.cost": { en: "Cost", ar: "التكلفة" },
+  "common.time": { en: "Time", ar: "الوقت" },
+  "common.confidence": { en: "Confidence", ar: "الثقة" },
+  "common.frequency": { en: "Frequency", ar: "التكرار" },
+  "common.evidence": { en: "Evidence", ar: "الأدلة" },
+  "common.reportId": { en: "Report ID", ar: "معرّف التقرير" },
+  "common.businessType": { en: "Business Type", ar: "نوع النشاط" },
+  "common.engineVersion": { en: "Engine", ar: "المحرك" },
+  "common.model": { en: "Model", ar: "النموذج" },
+  "common.provider": { en: "Provider", ar: "المزوّد" },
+  "common.generatedAt": { en: "Generated", ar: "تاريخ الإنشاء" },
+  "common.fallbackUsed": { en: "Fallback used", ar: "استُخدم المسار الاحتياطي" },
+  "common.processingTime": { en: "Processing time", ar: "زمن المعالجة" },
+
+  /* ---- auth ---- */
+  "auth.signIn": { en: "Sign in", ar: "تسجيل الدخول" },
+  "auth.signUp": { en: "Create account", ar: "إنشاء حساب" },
+  "auth.signInCta": { en: "Sign in to your workspace", ar: "ادخل إلى مساحة عملك" },
+  "auth.signUpCta": { en: "Start analyzing with AI agents", ar: "ابدأ التحليل مع وكلاء الذكاء الاصطناعي" },
+  "auth.email": { en: "Email", ar: "البريد الإلكتروني" },
+  "auth.password": { en: "Password", ar: "كلمة المرور" },
+  "auth.fullName": { en: "Full name", ar: "الاسم الكامل" },
+  "auth.haveAccount": { en: "Already have an account?", ar: "لديك حساب بالفعل؟" },
+  "auth.noAccount": { en: "Don't have an account?", ar: "ليس لديك حساب؟" },
+  "auth.demoHint": {
+    en: "Demo mode — any email & password (6+ chars) will sign you in.",
+    ar: "وضع تجريبي — أي بريد وكلمة مرور (6 أحرف أو أكثر) سيدخلك.",
+  },
+  "auth.welcomeBack": { en: "Welcome back", ar: "مرحبًا بعودتك" },
+
+  /* ---- dashboard ---- */
+  "dashboard.title": { en: "Dashboard", ar: "لوحة التحكم" },
+  "dashboard.subtitle": {
+    en: "Overview of your businesses and AI-generated intelligence",
+    ar: "نظرة عامة على شركاتك والذكاء المُولّد بالذكاء الاصطناعي",
+  },
+  "dashboard.kpi.businesses": { en: "Businesses", ar: "الشركات" },
+  "dashboard.kpi.reports": { en: "Reports generated", ar: "التقارير المُنشأة" },
+  "dashboard.kpi.reviews": { en: "Reviews analyzed", ar: "المراجعات المحلّلة" },
+  "dashboard.kpi.spend": { en: "LLM spend (USD)", ar: "إنفاق النماذج (دولار)" },
+  "dashboard.recentBusinesses": { en: "Recent businesses", ar: "أحدث الشركات" },
+  "dashboard.recentReports": { en: "Recent reports", ar: "أحدث التقارير" },
+  "dashboard.pipelineActivity": { en: "Pipeline activity", ar: "نشاط خط المعالجة" },
+  "dashboard.quickActions": { en: "Quick actions", ar: "إجراءات سريعة" },
+  "dashboard.empty.title": { en: "No businesses yet", ar: "لا توجد شركات بعد" },
+  "dashboard.empty.desc": {
+    en: "Create your first business and run the AI pipeline to generate SWOT, strategy and campaign intelligence.",
+    ar: "أنشئ شركتك الأولى وشغّل خط المعالجة بالذكاء الاصطناعي لتوليد تحليل سوات والاستراتيجية والحملات.",
+  },
+  "dashboard.action.newBusiness": { en: "New business", ar: "شركة جديدة" },
+  "dashboard.action.uploadReviews": { en: "Upload reviews", ar: "رفع مراجعات" },
+  "dashboard.action.runPipeline": { en: "Run full pipeline", ar: "تشغيل الخط الكامل" },
+
+  /* ---- businesses ---- */
+  "businesses.title": { en: "Businesses", ar: "الشركات" },
+  "businesses.subtitle": {
+    en: "Manage the businesses you analyze with the AI agents",
+    ar: "إدارة الشركات التي تحلّلها بوكلاء الذكاء الاصطناعي",
+  },
+  "businesses.new": { en: "New business", ar: "شركة جديدة" },
+  "businesses.name": { en: "Business name", ar: "اسم الشركة" },
+  "businesses.type": { en: "Business type", ar: "نوع النشاط" },
+  "businesses.description": { en: "Description", ar: "الوصف" },
+  "businesses.location": { en: "Location", ar: "الموقع" },
+  "businesses.reviews": { en: "Reviews", ar: "المراجعات" },
+  "businesses.status": { en: "Status", ar: "الحالة" },
+  "businesses.reports": { en: "Reports", ar: "التقارير" },
+  "businesses.empty.title": { en: "No businesses found", ar: "لا توجد شركات" },
+  "businesses.empty.desc": {
+    en: "Create a business to start generating AI intelligence reports.",
+    ar: "أنشئ شركة لبدء توليد تقارير الذكاء الاصطناعي.",
+  },
+  "businesses.detail.overview": { en: "Overview", ar: "نظرة عامة" },
+  "businesses.detail.runPipeline": { en: "Run full pipeline", ar: "تشغيل الخط الكامل" },
+  "businesses.detail.uploadFile": { en: "Upload review file", ar: "رفع ملف المراجعات" },
+  "businesses.detail.openSwot": { en: "Open SWOT report", ar: "فتح تقرير سوات" },
+  "businesses.detail.openStrategy": { en: "Open Strategy report", ar: "فتح تقرير الاستراتيجية" },
+  "businesses.detail.openCampaigns": { en: "Open Campaign briefs", ar: "فتح ملخصات الحملات" },
+  "businesses.detail.noReports": {
+    en: "No reports yet. Run the pipeline to generate intelligence.",
+    ar: "لا توجد تقارير بعد. شغّل خط المعالجة لتوليد الذكاء.",
+  },
+  "businesses.type.cafe": { en: "Cafe & Coffee", ar: "مقهى وقهوة" },
+  "businesses.type.restaurant": { en: "Restaurant", ar: "مطعم" },
+  "businesses.type.retail": { en: "Retail", ar: "تجزئة" },
+  "businesses.type.salon": { en: "Salon & Spa", ar: "صالون وسبا" },
+  "businesses.type.gym": { en: "Fitness & Gym", ar: "لياقة ونادي رياضي" },
+  "businesses.type.clinic": { en: "Clinic", ar: "عيادة" },
+
+  /* ---- upload ---- */
+  "upload.title": { en: "Upload scraper reviews", ar: "رفع مراجعات المجمع" },
+  "upload.subtitle": {
+    en: "Drop your scraper JSON (e.g. volume_cafe_updated.json) to feed the AI pipeline",
+    ar: "أسقط ملف JSON من المجمع (مثل volume_cafe_updated.json) لتغذية خط المعالجة",
+  },
+  "upload.selectBusiness": { en: "Select business", ar: "اختر الشركة" },
+  "upload.dropzone.title": { en: "Drag & drop your JSON file", ar: "اسحب وأفلت ملف JSON" },
+  "upload.dropzone.desc": {
+    en: "or click to browse — .json files up to 20MB",
+    ar: "أو انقر للتصفح — ملفات ‎.json‎ حتى 20 ميجابايت",
+  },
+  "upload.uploading": { en: "Uploading…", ar: "جارٍ الرفع…" },
+  "upload.uploaded": { en: "Uploaded successfully", ar: "تم الرفع بنجاح" },
+  "upload.runAfter": { en: "Run full pipeline after upload", ar: "شغّل الخط الكامل بعد الرفع" },
+  "upload.submit": { en: "Upload & process", ar: "رفع ومعالجة" },
+  "upload.invalidType": { en: "Only JSON files are supported", ar: "يُدعم فقط ملفات JSON" },
+
+  /* ---- pipeline ---- */
+  "pipeline.title": { en: "Pipeline", ar: "خط المعالجة" },
+  "pipeline.running": { en: "Pipeline running", ar: "خط المعالجة قيد التشغيل" },
+  "pipeline.completed": { en: "Pipeline completed", ar: "اكتمل خط المعالجة" },
+  "pipeline.failed": { en: "Pipeline failed", ar: "فشل خط المعالجة" },
+  "pipeline.queued": { en: "Pipeline queued", ar: "خط المعالجة في الانتظار" },
+  "pipeline.queued.label": { en: "Queued", ar: "في الانتظار" },
+  "pipeline.uploading.label": { en: "Uploading", ar: "الرفع" },
+  "pipeline.parsing.label": { en: "Parsing reviews", ar: "تحليل المراجعات" },
+  "pipeline.themes.label": { en: "Theme extraction", ar: "استخراج المواضيع" },
+  "pipeline.swot.label": { en: "SWOT Agent v7", ar: "وكيل سوات v7" },
+  "pipeline.strategy.label": { en: "Strategy Agent v1", ar: "وكيل الاستراتيجية v1" },
+  "pipeline.campaigns.label": { en: "Campaign briefs", ar: "ملخصات الحملات" },
+  "pipeline.mongo.label": { en: "MongoDB persistence", ar: "الحفظ في MongoDB" },
+  "pipeline.done.label": { en: "Done", ar: "تم" },
+  "pipeline.viewSwot": { en: "View SWOT report", ar: "عرض تقرير سوات" },
+  "pipeline.viewStrategy": { en: "View strategy report", ar: "عرض تقرير الاستراتيجية" },
+
+  /* ---- swot ---- */
+  "swot.title": { en: "SWOT Report", ar: "تقرير سوات" },
+  "swot.subtitle": {
+    en: "Generated by SWOT Agent v7 from real customer reviews",
+    ar: "مُولّد بواسطة وكيل سوات v7 من مراجعات حقيقية للعملاء",
+  },
+  "swot.strengths": { en: "Strengths", ar: "نقاط القوة" },
+  "swot.weaknesses": { en: "Weaknesses", ar: "نقاط الضعف" },
+  "swot.opportunities": { en: "Opportunities", ar: "الفرص" },
+  "swot.threats": { en: "Threats", ar: "التهديدات" },
+  "swot.summary": { en: "Strategic summary", ar: "الملخص الاستراتيجي" },
+  "swot.summary.mainAdvantage": { en: "Main advantage", ar: "الميزة الرئيسية" },
+  "swot.summary.criticalRisk": { en: "Most critical risk", ar: "الخطر الأكثر حرجًة" },
+  "swot.summary.bestOpportunity": { en: "Best growth opportunity", ar: "أفضل فرصة نمو" },
+  "swot.scoring": { en: "Scoring", ar: "الدرجات" },
+  "swot.importance": { en: "Importance", ar: "الأهمية" },
+  "swot.impact": { en: "Impact", ar: "التأثير" },
+  "swot.evidenceQuotes": { en: "Evidence quotes", ar: "اقتباسات الأدلة" },
+  "swot.sourceTheme": { en: "Source theme", ar: "الموضوع المصدر" },
+  "swot.empty.title": { en: "SWOT report not ready", ar: "تقرير سوات غير جاهز" },
+  "swot.empty.desc": {
+    en: "Run the pipeline to generate the SWOT analysis for this business.",
+    ar: "شغّل خط المعالجة لتوليد تحليل سوات لهذه الشركة.",
+  },
+  "swot.count": { en: "{count} items", ar: "{count} عناصر" },
+
+  /* ---- strategy ---- */
+  "strategy.title": { en: "Strategy Report", ar: "تقرير الاستراتيجية" },
+  "strategy.subtitle": {
+    en: "Strategic posture, TOWS matrix and priority roadmap by Strategy Agent v1",
+    ar: "الوضع الاستراتيجي ومصفوفة TOWS وخارطة الأولويات بواسطة وكيل الاستراتيجية v1",
+  },
+  "strategy.posture": { en: "Strategic posture", ar: "الوضع الاستراتيجي" },
+  "strategy.postureRationale": { en: "Posture rationale", ar: "مبرر الوضع" },
+  "strategy.tows": { en: "TOWS Matrix", ar: "مصفوفة TOWS" },
+  "strategy.tows.SO": { en: "SO — Strengths × Opportunities", ar: "SO — القوة × الفرص" },
+  "strategy.tows.ST": { en: "ST — Strengths × Threats", ar: "ST — القوة × التهديدات" },
+  "strategy.tows.WO": { en: "WO — Weaknesses × Opportunities", ar: "WO — الضعف × الفرص" },
+  "strategy.tows.WT": { en: "WT — Weaknesses × Threats", ar: "WT — الضعف × التهديدات" },
+  "strategy.priority": { en: "Priority action plan", ar: "خطة العمل حسب الأولوية" },
+  "strategy.priority.short": { en: "Priority", ar: "الأولوية" },
+  "strategy.effortImpact": { en: "Effort × Impact matrix", ar: "مصفوفة الجهد × التأثير" },
+  "strategy.resources": { en: "Resource assessment", ar: "تقييم الموارد" },
+  "strategy.resources.type": { en: "Type", ar: "النوع" },
+  "strategy.resources.gap": { en: "Gap", ar: "الفجوة" },
+  "strategy.resources.cost": { en: "Est. cost", ar: "التكلفة التقديرية" },
+  "strategy.effort": { en: "Effort", ar: "الجهد" },
+  "strategy.impact": { en: "Impact", ar: "التأثير" },
+  "strategy.owner": { en: "Owner", ar: "المسؤول" },
+  "strategy.timeframe": { en: "Timeframe", ar: "الإطار الزمني" },
+  "strategy.timeHorizon": { en: "Horizon", ar: "الأفق" },
+  "strategy.kpi": { en: "KPI", ar: "مؤشر الأداء" },
+  "strategy.leverages": { en: "Leverages", ar: "يستفيد من" },
+  "strategy.dependencies": { en: "Depends on", ar: "يعتمد على" },
+  "strategy.viewCampaigns": { en: "View campaigns", ar: "عرض الحملات" },
+  "strategy.current": { en: "Current", ar: "الحالي" },
+  "strategy.required": { en: "Required", ar: "المطلوب" },
+  "strategy.totalCost": { en: "Total estimated cost", ar: "إجمالي التكلفة التقديرية" },
+  "strategy.quickWins": { en: "Quick wins", ar: "مكاسب سريعة" },
+  "strategy.majorProjects": { en: "Major projects", ar: "مشاريع كبرى" },
+  "strategy.fillIns": { en: "Fill-ins", ar: "تكميلية" },
+  "strategy.thankless": { en: "Thankless", ar: "شاقة منخفضة العائد" },
+  "strategy.gap.low": { en: "Low gap", ar: "فجوة منخفضة" },
+  "strategy.gap.medium": { en: "Medium gap", ar: "فجوة متوسطة" },
+  "strategy.gap.high": { en: "High gap", ar: "فجوة مرتفعة" },
+  "strategy.resourceType.human": { en: "Human", ar: "بشرية" },
+  "strategy.resourceType.capital": { en: "Capital", ar: "رأس مال" },
+  "strategy.resourceType.technology": { en: "Technology", ar: "تقنية" },
+  "strategy.resourceType.data": { en: "Data", ar: "بيانات" },
+  "strategy.resourceType.brand": { en: "Brand", ar: "علامة تجارية" },
+  "strategy.legend.strategies": { en: "TOWS strategies", ar: "استراتيجيات TOWS" },
+  "strategy.legend.actions": { en: "Priority actions", ar: "إجراءات الأولوية" },
+  "strategy.empty.title": { en: "Strategy report not ready", ar: "تقرير الاستراتيجية غير جاهز" },
+  "strategy.empty.desc": {
+    en: "Run the pipeline to generate the strategic analysis.",
+    ar: "شغّل خط المعالجة لتوليد التحليل الاستراتيجي.",
+  },
+
+  /* ---- campaigns ---- */
+  "campaigns.title": { en: "Campaign Briefs", ar: "ملخصات الحملات" },
+  "campaigns.subtitle": {
+    en: "AI-generated campaign angles derived from your strategy",
+    ar: "زوايا حملات مُولّدة بالذكاء الاصطناعي من استراتيجيتك",
+  },
+  "campaigns.angle": { en: "Campaign angle", ar: "زاوية الحملة" },
+  "campaigns.pillar": { en: "Messaging pillar", ar: "الركيزة الرسالية" },
+  "campaigns.channels": { en: "Channel suitability", ar: "ملاءمة القنوات" },
+  "campaigns.sourceStrategy": { en: "Source strategy", ar: "الاستراتيجية المصدر" },
+  "campaigns.needsApproval": { en: "Needs human approval", ar: "يتطلب موافقة بشرية" },
+  "campaigns.autoApproved": { en: "Auto-approved", ar: "موافقة تلقائية" },
+  "campaigns.empty.title": { en: "No campaign briefs yet", ar: "لا توجد ملخصات حملات بعد" },
+  "campaigns.empty.desc": {
+    en: "Campaign briefs are generated as part of the strategy pipeline.",
+    ar: "تُولّد ملخصات الحملات كجزء من خط معالجة الاستراتيجية.",
+  },
+
+  /* ---- history ---- */
+  "history.title": { en: "Report History", ar: "سجل التقارير" },
+  "history.subtitle": {
+    en: "Every AI report persisted to MongoDB",
+    ar: "كل تقرير ذكاء اصطناعي محفوظ في MongoDB",
+  },
+  "history.kind": { en: "Kind", ar: "النوع" },
+  "history.business": { en: "Business", ar: "الشركة" },
+  "history.empty.title": { en: "No reports in history", ar: "لا توجد تقارير في السجل" },
+  "history.empty.desc": {
+    en: "Generated reports will appear here, each with its MongoDB report_id.",
+    ar: "ستظهر التقارير المُنشأة هنا، كلٌ بمعرّفه في MongoDB.",
+  },
+
+  /* ---- settings ---- */
+  "settings.title": { en: "Settings", ar: "الإعدادات" },
+  "settings.subtitle": {
+    en: "Workspace, appearance and AI engine preferences",
+    ar: "تفضيلات مساحة العمل والمظهر ومحرك الذكاء الاصطناعي",
+  },
+  "settings.appearance": { en: "Appearance", ar: "المظهر" },
+  "settings.theme": { en: "Theme", ar: "السمة" },
+  "settings.theme.light": { en: "Light", ar: "فاتح" },
+  "settings.theme.dark": { en: "Dark", ar: "داكن" },
+  "settings.theme.system": { en: "System", ar: "النظام" },
+  "settings.language": { en: "Language", ar: "اللغة" },
+  "settings.language.en": { en: "English", ar: "الإنجليزية" },
+  "settings.language.ar": { en: "Arabic", ar: "العربية" },
+  "settings.account": { en: "Account", ar: "الحساب" },
+  "settings.signOut": { en: "Sign out", ar: "تسجيل الخروج" },
+  "settings.engine": { en: "AI Engine", ar: "محرك الذكاء الاصطناعي" },
+  "settings.engine.provider": { en: "Provider", ar: "المزوّد" },
+  "settings.engine.model": { en: "Model", ar: "النموذج" },
+  "settings.engine.agents": { en: "Active agents", ar: "الوكلاء النشطون" },
+  "settings.backend": { en: "Backend connection", ar: "اتصال الخادم" },
+  "settings.backend.url": { en: "API base URL", ar: "عنوان الـ API الأساسي" },
+  "settings.backend.realMode": { en: "Connect to real backend", ar: "الاتصال بالخادم الحقيقي" },
+  "settings.backend.note": {
+    en: "Enabling this routes every request through the gateway with ?XTransformPort=8000 to the real FastAPI backend (sets USE_REAL_BACKEND=true). Reload required.",
+    ar: "تفعيل هذا الخيار يوجّه كل طلب عبر البوابة بـ ?XTransformPort=8000 إلى خادم FastAPI الحقيقي (يضبط USE_REAL_BACKEND=true). يجب إعادة التحميل.",
+  },
+  "settings.account.memberSince": { en: "Member since", ar: "عضو منذ" },
+  "settings.account.role": { en: "Role", ar: "الدور" },
+  "settings.account.role.owner": { en: "Owner", ar: "مالك" },
+  "settings.account.role.analyst": { en: "Analyst", ar: "محلل" },
+  "settings.account.role.viewer": { en: "Viewer", ar: "مشاهد" },
+
+  /* ---- campaigns extras ---- */
+  "campaigns.confidence.high": { en: "High", ar: "عالية" },
+  "campaigns.confidence.medium": { en: "Medium", ar: "متوسطة" },
+  "campaigns.confidence.low": { en: "Low", ar: "منخفضة" },
+  "campaigns.filters": { en: "Filter", ar: "تصفية" },
+  "campaigns.filters.approval": { en: "Approval", ar: "الموافقة" },
+  "campaigns.filters.confidence": { en: "Confidence", ar: "الثقة" },
+  "campaigns.count": { en: "{count} briefs", ar: "{count} ملخصات" },
+
+  /* ---- history extras ---- */
+  "history.summary.total": { en: "Reports", ar: "التقارير" },
+  "history.summary.cost": { en: "Total spend", ar: "إجمالي الإنفاق" },
+  "history.summary.fallbacks": { en: "Fallbacks", ar: "المسارات الاحتياطية" },
+  "history.reportId": { en: "Report ID", ar: "المعرّف" },
+  "history.engine": { en: "Engine", ar: "المحرك" },
+  "history.model": { en: "Model", ar: "النموذج" },
+  "history.fallback": { en: "Fallback", ar: "احتياطي" },
+  "history.time": { en: "Time", ar: "الزمن" },
+  "history.generated": { en: "Generated", ar: "تاريخ الإنشاء" },
+  "history.copyReportId": { en: "Copy report ID", ar: "نسخ معرّف التقرير" },
+
+  /* ---- common extras ---- */
+  "common.copy": { en: "Copy", ar: "نسخ" },
+  "common.copied": { en: "Copied to clipboard", ar: "تم النسخ إلى الحافظة" },
+  "common.total": { en: "Total", ar: "الإجمالي" },
+  "common.off": { en: "Off", ar: "مغلق" },
+  "common.on": { en: "On", ar: "مفتوح" },
+
+  /* ---- toasts ---- */
+  "toast.welcome": { en: "Welcome, {name} 👋", ar: "مرحبًا، {name} 👋" },
+  "toast.loggedIn": { en: "Signed in successfully", ar: "تم تسجيل الدخول بنجاح" },
+  "toast.registered": { en: "Account created", ar: "تم إنشاء الحساب" },
+  "toast.loggedOut": { en: "Signed out", ar: "تم تسجيل الخروج" },
+  "toast.businessCreated": { en: "Business created", ar: "تم إنشاء الشركة" },
+  "toast.uploaded": { en: "Reviews uploaded — pipeline started", ar: "تم رفع المراجعات — بدأ خط المعالجة" },
+  "toast.pipelineStarted": { en: "Pipeline started", ar: "بدأ خط المعالجة" },
+  "toast.pipelineDone": { en: "Pipeline completed — reports ready", ar: "اكتمل خط المعالجة — التقارير جاهزة" },
+  "toast.exported": { en: "Report exported to PDF", ar: "تم تصدير التقرير إلى PDF" },
+  "toast.loginError": { en: "Invalid credentials", ar: "بيانات الاعتماد غير صالحة" },
+  "toast.error": { en: "Something went wrong", ar: "حدث خطأ ما" },
+
+  /* ---- stages status ---- */
+  "stage.pending": { en: "Pending", ar: "في الانتظار" },
+  "stage.running": { en: "Running", ar: "قيد التشغيل" },
+  "stage.completed": { en: "Completed", ar: "مكتمل" },
+  "stage.failed": { en: "Failed", ar: "فشل" },
+} as const;
+
+export type TranslationKey = keyof typeof translations;
+
+export function getTranslation(key: TranslationKey, locale: Locale): string {
+  const entry = translations[key];
+  if (!entry) return key;
+  return entry[locale];
+}

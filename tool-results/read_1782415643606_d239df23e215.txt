@@ -1,0 +1,1369 @@
+     1→/**
+     2→ * In-memory mock data layer that faithfully implements the platform's Pydantic
+     3→ * schemas. Realistic Arabic + English mixed evidence quotes (per business
+     4→ * reality). Used by the local /api/v1/* route handlers so the frontend is fully
+     5→ * functional. Swap for the real FastAPI backend by enabling USE_REAL_BACKEND.
+     6→ *
+     7→ * Server-only module.
+     8→ */
+     9→import "server-only";
+    10→import type {
+    11→  Business,
+    12→  BusinessListResponse,
+    13→  CreateBusinessRequest,
+    14→  HistoryEntry,
+    15→  PipelineResult,
+    16→  PipelineStage,
+    17→  PipelineStageName,
+    18→  SWOTReportEnvelope,
+    19→  StrategyReportEnvelope,
+    20→  CampaignsReportEnvelope,
+    21→  CampaignBrief,
+    22→} from "@/types";
+    23→
+    24→const NOW = Date.now();
+    25→const iso = (offsetMs: number) => new Date(NOW - offsetMs).toISOString();
+    26→
+    27→/* ------------------------------------------------------------------ */
+    28→/* SWOT reports                                                        */
+    29→/* ------------------------------------------------------------------ */
+    30→
+    31→const volumeCafeSwot: SWOTReportEnvelope = {
+    32→  report_id: "swot_01HZXK8VOLUMECAFE7Q9M",
+    33→  business_id: "biz_volume_cafe",
+    34→  created_at: iso(1000 * 60 * 60 * 6),
+    35→  business_type: "cafe",
+    36→  engine_version: "swot-agent-v7",
+    37→  swot_report: {
+    38→    strengths: [
+    39→      {
+    40→        item_id: "s_vol_01",
+    41→        title: "Specialty coffee quality is the core differentiator",
+    42→        reasoning:
+    43→          "Reviewers consistently single out the espresso and single-origin pours as best-in-area. The theme appears across 312 reviews with strongly positive sentiment, indicating a durable product advantage rather than a fad.",
+    44→        source_theme: "coffee_quality",
+    45→        scoring: { importance: 0.95, impact: 0.9, confidence: 0.92 },
+    46→        evidence_refs: [
+    47→          "Best flat white in Riyadh, hands down — the beans are unreal.",
+    48→          "أفضل قهوة جربتها، الإسبريسو ممتاز والنكهة غنية.",
+    49→          "Their V60 pour-over is better than the specialty chains downtown.",
+    50→        ],
+    51→        frequency: 312,
+    52→      },
+    53→      {
+    54→        item_id: "s_vol_02",
+    55→        title: "Fast, friendly service during morning rush",
+    56→        reasoning:
+    57→          "Speed-of-service comments cluster in the 7–9am window with positive tone. Staff are named frequently, suggesting rapport building that drives repeat visits.",
+    58→        source_theme: "service_speed",
+    59→        scoring: { importance: 0.82, impact: 0.78, confidence: 0.85 },
+    60→        evidence_refs: [
+    61→          "Even with a line out the door, my order was ready in 3 minutes.",
+    62→          "الخدمة سريعة جدا في الصباح والموظفين لطفاء.",
+    63→          "Barista remembered my name on the second visit. Love that.",
+    64→        ],
+    65→        frequency: 198,
+    66→      },
+    67→      {
+    68→        item_id: "s_vol_03",
+    69→        title: "Strong ambiance & remote-work fit (WiFi)",
+    70→        reasoning:
+    71→          "Ambiance + reliable WiFi is a recurring positive theme, positioning the cafe as a daytime third-place for freelancers and students — a high-margin, long-dwell segment.",
+    72→        source_theme: "ambiance_work",
+    73→        scoring: { importance: 0.74, impact: 0.7, confidence: 0.8 },
+    74→        evidence_refs: [
+    75→          "Perfect spot to work for a couple of hours — quiet, good WiFi, great coffee.",
+    76→          "الأجواء هادئة ومريحة للعمل، والواي فاي ممتاز.",
+    77→        ],
+    78→        frequency: 121,
+    79→      },
+    80→    ],
+    81→    weaknesses: [
+    82→      {
+    83→        item_id: "w_vol_01",
+    84→        title: "Pricing perceived as premium vs. local alternatives",
+    85→        reasoning:
+    86→          "A meaningful share of negative reviews cite price. While premium positioning is intentional, the gap to nearest competitor is wide enough to cause hesitation for daily visitors.",
+    87→        source_theme: "pricing",
+    88→        scoring: { importance: 0.78, impact: 0.7, confidence: 0.74 },
+    89→        evidence_refs: [
+    90→          "Love the coffee but 22 SAR for a latte is steep for a daily habit.",
+    91→          "الأسعار غالية شوي مقارنة بالمقاهي الثانية.",
+    92→          "Great quality, but I save it for treats, not mornings.",
+    93→        ],
+    94→        frequency: 156,
+    95→      },
+    96→      {
+    97→        item_id: "w_vol_02",
+    98→        title: "Inconsistent experience during evening peak",
+    99→        reasoning:
+   100→          "Negative service comments spike after 6pm — wait times, drink inconsistency. Indicates staffing or training gaps on the second shift.",
+   101→        source_theme: "evening_consistency",
+   102→        scoring: { importance: 0.7, impact: 0.66, confidence: 0.68 },
+   103→        evidence_refs: [
+   104→          "Came at 7pm, waited 12 minutes and my cappuccino was lukewarm.",
+   105→          "في المساء الخدمة تتباطأ والقهوة مو نفس الجودة.",
+   106→        ],
+   107→        frequency: 88,
+   108→      },
+   109→      {
+   110→        item_id: "w_vol_03",
+   111→        title: "Limited food / pastry variety",
+   112→        reasoning:
+   113→          "Customers asking for brunch or lunch options leave underserved. Frequent requests for savory items and dietary options (vegan, gluten-free).",
+   114→        source_theme: "food_variety",
+   115→        scoring: { importance: 0.6, impact: 0.55, confidence: 0.72 },
+   116→        evidence_refs: [
+   117→          "Wish they had more than croissants — a proper sandwich would be great.",
+   118→          "محتاجين خيارات أكل أكثر، خاصة نباتي.",
+   119→        ],
+   120→        frequency: 73,
+   121→      },
+   122→    ],
+   123→    opportunities: [
+   124→      {
+   125→        item_id: "o_vol_01",
+   126→        title: "Loyalty app / subscription for daily drinkers",
+   127→        reasoning:
+   128→          "High frequency of 'wish I could come daily' + price sensitivity points to a subscription (e.g. monthly unlimited) that converts price pain into retention and predictable revenue.",
+   129→        source_theme: "retention_monetization",
+   130→        scoring: { importance: 0.85, impact: 0.82, confidence: 0.7 },
+   131→        evidence_refs: [
+   132→          "I'd buy a monthly coffee pass in a heartbeat.",
+   133→          "لو فيه اشتراك شهري بأجلّي كل يوم.",
+   134→        ],
+   135→        frequency: 64,
+   136→      },
+   137→      {
+   138→        item_id: "o_vol_02",
+   139→        title: "B2B office coffee & bean retail expansion",
+   140→        reasoning:
+   141→          "Several reviews mention buying beans and gifting them. A branded beans + office-delivery line extends the product advantage into a higher-margin retail channel.",
+   142→        source_theme: "retail_b2b",
+   143→        scoring: { importance: 0.72, impact: 0.75, confidence: 0.64 },
+   144→        evidence_refs: [
+   145→          "I buy their beans for home — would love a subscription delivery.",
+   146→          "حبوب القهوة عندهم ممتازة، أشتريها للبيت.",
+   147→        ],
+   148→        frequency: 47,
+   149→      },
+   150→      {
+   151→        item_id: "o_vol_03",
+   152→        title: "Expand evening food to capture dinner/day crowd",
+   153→        reasoning:
+   154→          "Weakness in food variety is also an opportunity — adding a focused savory menu can convert the cafe from morning-only to all-day destination.",
+   155→        source_theme: "menu_expansion",
+   156→        scoring: { importance: 0.68, impact: 0.7, confidence: 0.6 },
+   157→        evidence_refs: [
+   158→          "If they had good lunch options I'd stay all day.",
+   159→          "لو أضافوا ساندويشات راح أزورهم بعد الدوام.",
+   160→        ],
+   161→        frequency: 39,
+   162→      },
+   163→    ],
+   164→    threats: [
+   165→      {
+   166→        item_id: "t_vol_01",
+   167→        title: "Aggressive specialty-chain expansion in the area",
+   168→        reasoning:
+   169→          "Two international specialty chains opened within 1.5km in the last year. Reviews mention 'trying the new place' — share-of-visit risk is real for the morning ritual crowd.",
+   170→        source_theme: "competition",
+   171→        scoring: { importance: 0.8, impact: 0.76, confidence: 0.66 },
+   172→        evidence_refs: [
+   173→          "Tried the new % chain down the road — decent, and cheaper.",
+   174→          "المقاهي الجديدة كثرت مؤخرا والأسعار أرخص.",
+   175→        ],
+   176→        frequency: 58,
+   177→      },
+   178→      {
+   179→        item_id: "t_vol_02",
+   180→        title: "Green-bean cost volatility squeezing margins",
+   181→        reasoning:
+   182→          "Specialty-grade arabica prices have risen; maintaining current quality at current price is unsustainable without either premiumization or volume.",
+   183→        source_theme: "cost_inflation",
+   184→        scoring: { importance: 0.72, impact: 0.7, confidence: 0.6 },
+   185→        evidence_refs: [
+   186→          "Hope they don't raise prices again — already at the limit.",
+   187→          "أخاف يرفعون الأسعار أكثر.",
+   188→        ],
+   189→        frequency: 31,
+   190→      },
+   191→      {
+   192→        item_id: "t_vol_03",
+   193→        title: "Staff retention risk on second shift",
+   194→        reasoning:
+   195→          "Evening inconsistency traces to turnover. Without retention, quality drift will compound and erode the core strength.",
+   196→        source_theme: "talent_retention",
+   197→        scoring: { importance: 0.66, impact: 0.62, confidence: 0.58 },
+   198→        evidence_refs: [
+   199→          "Seems like always new faces in the evening.",
+   200→          "الموظفين يتغيرون كثير بالمساء.",
+   201→        ],
+   202→        frequency: 22,
+   203→      },
+   204→    ],
+   205→  },
+   206→  strategic_summary: {
+   207→    main_advantage:
+   208→      "A genuinely superior specialty-coffee product backed by fast, personable morning service — the kind of product advantage competitors cannot copy quickly.",
+   209→    most_critical_risk:
+   210→      "Evening-shift inconsistency is quietly eroding the brand promise and handing the after-work crowd to new entrants.",
+   211→    best_growth_opportunity:
+   212→      "Launch a monthly coffee subscription that monetizes the price-sensitive daily drinker while locking in retention ahead of competitor expansion.",
+   213→  },
+   214→  meta: {
+   215→    llm_provider_used: "vertex_ai",
+   216→    llm_model_used: "gemini-2.5-flash",
+   217→    fallback_used: false,
+   218→    processing_time_ms: 8420,
+   219→    cost_estimate_usd: 0.142,
+   220→  },
+   221→};
+   222→
+   223→const layaliSwot: SWOTReportEnvelope = {
+   224→  report_id: "swot_01HZXK9LAYALIRST9K2P",
+   225→  business_id: "biz_layali",
+   226→  created_at: iso(1000 * 60 * 60 * 30),
+   227→  business_type: "restaurant",
+   228→  engine_version: "swot-agent-v7",
+   229→  swot_report: {
+   230→    strengths: [
+   231→      {
+   232→        item_id: "s_lay_01",
+   233→        title: "Authentic Levantine flavors & family recipes",
+   234→        reasoning:
+   235→          "Authenticity is the dominant positive theme. Dishes like molokhia and mixed grill are repeatedly called 'like home', signalling a defensible culinary moat.",
+   236→        source_theme: "authenticity",
+   237→        scoring: { importance: 0.92, impact: 0.88, confidence: 0.9 },
+   238→        evidence_refs: [
+   239→          "The molokhia tastes exactly like my grandmother's — incredible.",
+   240→          "الطعم أصلي يذكّرني ببيت جدتي، رائع.",
+   241→          "Best mixed grill in Jeddah, hands down.",
+   242→        ],
+   243→        frequency: 287,
+   244→      },
+   245→      {
+   246→        item_id: "s_lay_02",
+   247→        title: "Generous portions & value perception",
+   248→        reasoning:
+   249→          "Portion size relative to price drives strong value perception, especially for group dining — a key driver of high visit frequency.",
+   250→        source_theme: "value",
+   251→        scoring: { importance: 0.8, impact: 0.76, confidence: 0.83 },
+   252→        evidence_refs: [
+   253→          "Huge portions, we always leave with leftovers. Great value.",
+   254→          "الكميات كبيرة والسعر ممتاز للعائلة.",
+   255→        ],
+   256→        frequency: 176,
+   257→      },
+   258→    ],
+   259→    weaknesses: [
+   260→      {
+   261→        item_id: "w_lay_01",
+   262→        title: "Long wait times on weekends",
+   263→        reasoning:
+   264→          "Friday/Saturday wait times dominate negative sentiment. Capacity is the bottleneck — both tables and kitchen throughput.",
+   265→        source_theme: "wait_time",
+   266→        scoring: { importance: 0.84, impact: 0.8, confidence: 0.82 },
+   267→        evidence_refs: [
+   268→          "Waited 45 minutes for a table on Friday — unacceptable.",
+   269→          "انتظرنا ساعة يوم الجمعة، زيادة.",
+   270→        ],
+   271→        frequency: 142,
+   272→      },
+   273→      {
+   274→        item_id: "w_lay_02",
+   275→        title: "Inconsistent service attentiveness",
+   276→        reasoning:
+   277→          "When busy, staff attentiveness drops — orders forgotten, refills delayed. A service-process issue, not a staffing-volume issue alone.",
+   278→        source_theme: "service_attentiveness",
+   279→        scoring: { importance: 0.7, impact: 0.66, confidence: 0.7 },
+   280→        evidence_refs: [
+   281→          "They forgot our drinks and we had to ask three times.",
+   282→          "نسوا طلبنا واضطرينا نكرر الطلب.",
+   283→        ],
+   284→        frequency: 96,
+   285→      },
+   286→    ],
+   287→    opportunities: [
+   288→      {
+   289→        item_id: "o_lay_01",
+   290→        title: "Online ordering & family meal bundles",
+   291→        reasoning:
+   292→          "High value perception + family dining = strong fit for delivery 'family feast' bundles that extend revenue beyond physical capacity.",
+   293→        source_theme: "delivery_bundles",
+   294→        scoring: { importance: 0.82, impact: 0.8, confidence: 0.68 },
+   295→        evidence_refs: [
+   296→          "Wish I could order their mixed grill for family dinners at home.",
+   297→          "يتمنى لو فيه طلبات توصيل لعشاء العائلة.",
+   298→        ],
+   299→        frequency: 71,
+   300→      },
+   301→      {
+   302→        item_id: "o_lay_02",
+   303→        title: "Reservation system to smooth weekend peaks",
+   304→        reasoning:
+   305→          "Wait pain + family crowd = reservations + quoted wait times would convert frustration into predictability and capture more visits.",
+   306→        source_theme: "reservations",
+   307→        scoring: { importance: 0.76, impact: 0.74, confidence: 0.72 },
+   308→        evidence_refs: [
+   309→          "Why no reservations? Would solve everything for Fridays.",
+   310→          "ليش ما فيه حجز مسبق؟ كان حل المشكلة.",
+   311→        ],
+   312→        frequency: 53,
+   313→      },
+   314→    ],
+   315→    threats: [
+   316→      {
+   317→        item_id: "t_lay_01",
+   318→        title: "Cloud-kitchen delivery brands undercutting on price",
+   319→        reasoning:
+   320→          "Delivery-first brands with lower overhead are pricing aggressively on aggregators, threatening the to-go segment Layali hasn't captured.",
+   321→        source_theme: "cloud_kitchen_competition",
+   322→        scoring: { importance: 0.74, impact: 0.7, confidence: 0.62 },
+   323→        evidence_refs: [
+   324→          "Cheaper Levantine options keep popping up on the apps.",
+   325→          "في مطابخ سحابية أرخص على تطبيقات التوصيل.",
+   326→        ],
+   327→        frequency: 44,
+   328→      },
+   329→    ],
+   330→  },
+   331→  strategic_summary: {
+   332→    main_advantage:
+   333→      "Genuine Levantine authenticity at family-dining scale — a culinary identity competitors struggle to replicate.",
+   334→    most_critical_risk:
+   335→      "Weekend capacity and wait times are turning the highest-demand nights into the worst experiences.",
+   336→    best_growth_opportunity:
+   337→      "Launch family-feast delivery bundles to monetize authentic food beyond the dining room's physical ceiling.",
+   338→  },
+   339→  meta: {
+   340→    llm_provider_used: "vertex_ai",
+   341→    llm_model_used: "gemini-2.5-flash",
+   342→    fallback_used: true,
+   343→    processing_time_ms: 9650,
+   344→    cost_estimate_usd: 0.158,
+   345→  },
+   346→};
+   347→
+   348→const glowSwot: SWOTReportEnvelope = {
+   349→  report_id: "swot_01HZXKAGLOWSALON4F7T",
+   350→  business_id: "biz_glow_salon",
+   351→  created_at: iso(1000 * 60 * 60 * 50),
+   352→  business_type: "salon",
+   353→  engine_version: "swot-agent-v7",
+   354→  swot_report: {
+   355→    strengths: [
+   356→      {
+   357→        item_id: "s_glow_01",
+   358→        title: "Skilled, personable stylists with strong repeat loyalty",
+   359→        reasoning:
+   360→          "Stylists are named and praised repeatedly; repeat-visit language ('my stylist', 'always book with') indicates high switching costs once a relationship forms.",
+   361→        source_theme: "stylist_expertise",
+   362→        scoring: { importance: 0.9, impact: 0.86, confidence: 0.88 },
+   363→        evidence_refs: [
+   364→          "Lina is a magician — I won't let anyone else touch my hair.",
+   365→          "لينا الأفضل، ما أثق بأحد غيرها.",
+   366→          "Always book with the same stylist, never disappointed.",
+   367→        ],
+   368→        frequency: 203,
+   369→      },
+   370→      {
+   371→        item_id: "s_glow_02",
+   372→        title: "Clean, calm, premium ambiance",
+   373→        reasoning:
+   374→          "Cleanliness and ambiance are a consistent positive theme — critical for the salon category where trust and comfort drive spend.",
+   375→        source_theme: "ambiance_cleanliness",
+   376→        scoring: { importance: 0.78, impact: 0.74, confidence: 0.84 },
+   377→        evidence_refs: [
+   378→          "Spotless and so relaxing — feels like a real retreat.",
+   379→          "نظيف جدا والأجواء مريحة وفخمة.",
+   380→        ],
+   381→        frequency: 118,
+   382→      },
+   383→    ],
+   384→    weaknesses: [
+   385→      {
+   386→        item_id: "w_glow_01",
+   387→        title: "Booking friction — phone-only reservations",
+   388→        reasoning:
+   389→          "Booking complaints cluster around phone-tag and no online system. In a category where convenience wins, this is a measurable conversion leak.",
+   390→        source_theme: "booking_friction",
+   391→        scoring: { importance: 0.82, impact: 0.78, confidence: 0.8 },
+   392→        evidence_refs: [
+   393→          "Why no online booking? I called 4 times before someone answered.",
+   394→          "ليش ما فيه حجز أونلاين؟ اتصلت أربع مرات.",
+   395→        ],
+   396→        frequency: 97,
+   397→      },
+   398→      {
+   399→        item_id: "w_glow_02",
+   400→        title: "Premium pricing limits trial by new clients",
+   401→        reasoning:
+   402→          "Price is the top hesitation for first-timers. Trial requires confidence; without a low-risk entry, the top of funnel is constrained.",
+   403→        source_theme: "pricing_trial",
+   404→        scoring: { importance: 0.7, impact: 0.66, confidence: 0.72 },
+   405→        evidence_refs: [
+   406→          "Beautiful results but pricey — nervous to try without a deal.",
+   407→          "غالي شوي، مترددة أجرب بدون عرض.",
+   408→        ],
+   409→        frequency: 81,
+   410→      },
+   411→    ],
+   412→    opportunities: [
+   413→      {
+   414→        item_id: "o_glow_01",
+   415→        title: "Online booking + loyalty program",
+   416→        reasoning:
+   417→          "Booking friction + repeat loyalty = a self-serve booking app with a loyalty ladder directly removes the #1 weakness and reinforces the #1 strength.",
+   418→        source_theme: "digital_booking",
+   419→        scoring: { importance: 0.86, impact: 0.84, confidence: 0.78 },
+   420→        evidence_refs: [
+   421→          "An app to book and track visits would be amazing.",
+   422→          "تطبيق للحجز وللنقاط يكون ممتاز.",
+   423→        ],
+   424→        frequency: 66,
+   425→      },
+   426→      {
+   427→        item_id: "o_glow_02",
+   428→        title: "First-visit 'glow introduction' package",
+   429→        reasoning:
+   430→          "A bounded trial package (e.g. express blow-dry + consultation) lowers risk for new clients without discounting the core premium service.",
+   431→        source_theme: "trial_package",
+   432→        scoring: { importance: 0.72, impact: 0.7, confidence: 0.66 },
+   433→        evidence_refs: [
+   434→          "I'd try them with a smaller intro service.",
+   435→          "أجربهم بخدمة بسيطة أول مرة.",
+   436→        ],
+   437→        frequency: 38,
+   438→      },
+   439→    ],
+   440→    threats: [
+   441→      {
+   442→        item_id: "t_glow_01",
+   443→        title: "Instagram-led solo stylists undercutting on price",
+   444→        reasoning:
+   445→          "Independent stylists operating from home studios with low overhead are actively courting Glow's price-sensitive segment via social proof.",
+   446→        source_theme: "indie_competition",
+   447→        scoring: { importance: 0.68, impact: 0.64, confidence: 0.6 },
+   448→        evidence_refs: [
+   449→          "So many home stylists on Insta now, way cheaper.",
+   450→          "كثير ستايلست من البيت على انستقرام وأرخص.",
+   451→        ],
+   452→        frequency: 41,
+   453→      },
+   454→    ],
+   455→  },
+   456→  strategic_summary: {
+   457→    main_advantage:
+   458→      "Trusted, named stylist relationships in a spotless premium environment — the foundation of high repeat spend.",
+   459→    most_critical_risk:
+   460→      "Phone-only booking is a conversion leak at the exact moment new clients decide to try the salon.",
+   461→    best_growth_opportunity:
+   462→      "Launch self-serve online booking tied to a loyalty ladder to remove friction and deepen retention simultaneously.",
+   463→  },
+   464→  meta: {
+   465→    llm_provider_used: "vertex_ai",
+   466→    llm_model_used: "gemini-2.5-flash",
+   467→    fallback_used: false,
+   468→    processing_time_ms: 7100,
+   469→    cost_estimate_usd: 0.121,
+   470→  },
+   471→};
+   472→
+   473→/* ------------------------------------------------------------------ */
+   474→/* Strategy reports                                                    */
+   475→/* ------------------------------------------------------------------ */
+   476→
+   477→const volumeCafeStrategy: StrategyReportEnvelope = {
+   478→  report_id: "str_01HZXK8VOLUMECAFE7Q9M",
+   479→  business_id: "biz_volume_cafe",
+   480→  created_at: iso(1000 * 60 * 60 * 6),
+   481→  business_type: "cafe",
+   482→  strategic_posture: "Defend & Deepen",
+   483→  posture_rationale:
+   484→    "Volume Cafe holds a genuine product advantage but faces fast-moving competition and internal consistency drift. The right posture is to defend the morning ritual stronghold while deepening retention (subscription) and extending the daypart (food) — not a reckless expansion that dilutes quality.",
+   485→  tows_matrix: {
+   486→    SO: [
+   487→      {
+   488→        strategy_id: "so_vol_1",
+   489→        category: "SO",
+   490→        title: "Launch 'Daily Volume' coffee subscription",
+   491→        description:
+   492→          "Monetize the coffee-quality strength against the retention opportunity: a monthly subscription (e.g. 1 drink/day) converts price-sensitive daily drinkers into locked-in recurring revenue.",
+   493→        leverages: ["s_vol_01", "o_vol_01"],
+   494→        effort: 4,
+   495→        impact: 9,
+   496→        time_horizon: "0-3 months",
+   497→        confidence: 0.78,
+   498→      },
+   499→      {
+   500→        strategy_id: "so_vol_2",
+   501→        category: "SO",
+   502→        title: "Branded beans + office B2B delivery",
+   503→        description:
+   504→          "Extend the product advantage into retail & B2B: sell branded beans online with office coffee delivery subscriptions.",
+   505→        leverages: ["s_vol_01", "o_vol_02"],
+   506→        effort: 6,
+   507→        impact: 8,
+   508→        time_horizon: "3-6 months",
+   509→        confidence: 0.66,
+   510→      },
+   511→    ],
+   512→    ST: [
+   513→      {
+   514→        strategy_id: "st_vol_1",
+   515→        category: "ST",
+   516→        title: "Community & loyalty moat vs. chain expansion",
+   517→        description:
+   518→          "Use the named-barista rapport strength to build a community/loyalty identity chains can't replicate — local events, 'your barista' content, referral rewards.",
+   519→        leverages: ["s_vol_02", "t_vol_01"],
+   520→        effort: 5,
+   521→        impact: 7,
+   522→        time_horizon: "0-3 months",
+   523→        confidence: 0.7,
+   524→      },
+   525→      {
+   526→        strategy_id: "st_vol_2",
+   527→        category: "ST",
+   528→        title: "Premium-tier positioning to absorb bean-cost inflation",
+   529→        description:
+   530→          "Reframe pricing as craft-premium with visible origin storytelling so the strength (quality) justifies the price, neutralizing cost-volatility threat without racing to the bottom.",
+   531→        leverages: ["s_vol_01", "t_vol_02"],
+   532→        effort: 5,
+   533→        impact: 7,
+   534→        time_horizon: "3-6 months",
+   535→        confidence: 0.64,
+   536→      },
+   537→    ],
+   538→    WO: [
+   539→      {
+   540→        strategy_id: "wo_vol_1",
+   541→        category: "WO",
+   542→        title: "Add focused savory daypart menu",
+   543→        description:
+   544→          "Address the food-variety weakness while capturing the all-day opportunity: a small, high-quality savory menu to extend beyond mornings.",
+   545→        leverages: ["w_vol_03", "o_vol_03"],
+   546→        effort: 7,
+   547→        impact: 8,
+   548→        time_horizon: "3-6 months",
+   549→        confidence: 0.62,
+   550→      },
+   551→    ],
+   552→    WT: [
+   553→      {
+   554→        strategy_id: "wt_vol_1",
+   555→        category: "WT",
+   556→        title: "Second-shift quality stabilization program",
+   557→        description:
+   558→          "Fix evening inconsistency (weakness) that fuels competitor switching (threat): standardized evening SOPs, retention bonus for shift-2 staff, mystery-shopper audits.",
+   559→        leverages: ["w_vol_02", "t_vol_01", "t_vol_03"],
+   560→        effort: 6,
+   561→        impact: 8,
+   562→        time_horizon: "0-3 months",
+   563→        confidence: 0.74,
+   564→      },
+   565→      {
+   566→        strategy_id: "wt_vol_2",
+   567→        category: "WT",
+   568→        title: "Value-ladder pricing (daily tier)",
+   569→        description:
+   570→          "Address pricing weakness under competitive + cost threats by introducing a value tier (house blend) that protects trial without discounting the premium single-origin line.",
+   571→        leverages: ["w_vol_01", "t_vol_01", "t_vol_02"],
+   572→        effort: 5,
+   573→        impact: 6,
+   574→        time_horizon: "0-3 months",
+   575→        confidence: 0.6,
+   576→      },
+   577→    ],
+   578→  },
+   579→  priority_action_plan: [
+   580→    {
+   581→      action_id: "pa_vol_1",
+   582→      title: "Ship 'Daily Volume' subscription MVP",
+   583→      description:
+   584→        "Stand up a monthly subscription (1 drink/day, 2 tiers) with in-store redemption + simple digital pass. Target 200 subscribers in 60 days.",
+   585→      priority: "P0",
+   586→      owner: "Growth Lead",
+   587→      effort: 4,
+   588→      impact: 9,
+   589→      timeframe: "0-2 months",
+   590→      kpi: "200 active subscribers; +12% monthly repeat visits",
+   591→      dependencies: ["so_vol_1"],
+   592→    },
+   593→    {
+   594→      action_id: "pa_vol_2",
+   595→      title: "Stabilize second-shift quality",
+   596→      description:
+   597→        "Roll out evening SOPs, shift-2 retention bonus, weekly mystery shopper audits. Cut evening negative reviews by 50%.",
+   598→      priority: "P0",
+   599→      owner: "Operations Manager",
+   600→      effort: 6,
+   601→      impact: 8,
+   602→      timeframe: "0-2 months",
+   603→      kpi: "Evening negative-review share 30%→15%",
+   604→      dependencies: ["wt_vol_1"],
+   605→    },
+   606→    {
+   607→      action_id: "pa_vol_3",
+   608→      title: "Launch community loyalty program",
+   609→      description:
+   610→        "Loyalty ladder + 'your barista' content + referral rewards to defend against chain expansion.",
+   611→      priority: "P1",
+   612→      owner: "Marketing Lead",
+   613→      effort: 5,
+   614→      impact: 7,
+   615→      timeframe: "1-3 months",
+   616→      kpi: "+25% referral-driven first visits",
+   617→      dependencies: ["st_vol_1"],
+   618→    },
+   619→    {
+   620→      action_id: "pa_vol_4",
+   621→      title: "Pilot focused savory daypart menu",
+   622→      description:
+   623→        "Test a 6-item savory menu in 1 store for 8 weeks; measure attach rate and all-day visit lift.",
+   624→      priority: "P2",
+   625→      owner: "Product / Culinary",
+   626→      effort: 7,
+   627→      impact: 8,
+   628→      timeframe: "3-5 months",
+   629→      kpi: "Food attach rate 8%→22%",
+   630→      dependencies: ["wo_vol_1"],
+   631→    },
+   632→    {
+   633→      action_id: "pa_vol_5",
+   634→      title: "Branded beans + B2B office delivery",
+   635→      description:
+   636→        "E-commerce beans + outbound B2B office coffee contracts in business districts.",
+   637→      priority: "P3",
+   638→      owner: "Retail Lead",
+   639→      effort: 6,
+   640→      impact: 8,
+   641→      timeframe: "4-6 months",
+   642→      kpi: "10 B2B accounts; bean DTC revenue baseline",
+   643→      dependencies: ["so_vol_2"],
+   644→    },
+   645→  ],
+   646→  resource_assessment: [
+   647→    {
+   648→      resource_id: "res_vol_1",
+   649→      resource_type: "technology",
+   650→      name: "Subscription / digital pass platform",
+   651→      current_state: "No in-house subscription or loyalty tech",
+   652→      required_state: "Lightweight subscription billing + redeemable digital pass",
+   653→      gap: "medium",
+   654→      estimated_cost_usd: 9000,
+   655→    },
+   656→    {
+   657→      resource_id: "res_vol_2",
+   658→      resource_type: "human",
+   659→      name: "Second-shift lead barista + trainer",
+   660→      current_state: "High turnover on shift 2; no dedicated trainer",
+   661→      required_state: "Dedicated shift-2 lead + part-time trainer",
+   662→      gap: "high",
+   663→      estimated_cost_usd: 18000,
+   664→    },
+   665→    {
+   666→      resource_id: "res_vol_3",
+   667→      resource_type: "capital",
+   668→      name: "Kitchen build-out for savory menu",
+   669→      current_state: "Pastry-only kitchen, no hot line",
+   670→      required_state: "Compact hot line + exhaust for savory pilot",
+   671→      gap: "medium",
+   672→      estimated_cost_usd: 24000,
+   673→    },
+   674→    {
+   675→      resource_id: "res_vol_4",
+   676→      resource_type: "brand",
+   677→      name: "Brand storytelling assets (origin, craft)",
+   678→      current_state: "Minimal origin/craft content",
+   679→      required_state: "Photo + video origin storytelling library",
+   680→      gap: "low",
+   681→      estimated_cost_usd: 4500,
+   682→    },
+   683→    {
+   684→      resource_id: "res_vol_5",
+   685→      resource_type: "data",
+   686→      name: "Customer & visit analytics",
+   687→      current_state: "POS-only data, no unified customer view",
+   688→      required_state: "Unified customer + visit + subscription dashboard",
+   689→      gap: "medium",
+   690→      estimated_cost_usd: 6500,
+   691→    },
+   692→  ],
+   693→  campaign_brief_feed: [
+   694→    {
+   695→      feed_id: "cb_vol_1",
+   696→      source_strategy_id: "so_vol_1",
+   697→      campaign_angle: "Your daily ritual, unlocked",
+   698→      messaging_pillar: "Premium coffee becomes affordable when it's your habit",
+   699→      channel_suitability: ["Instagram", "TikTok", "Email", "In-store"],
+   700→      confidence: "high",
+   701→      requires_human_approval: false,
+   702→    },
+   703→    {
+   704→      feed_id: "cb_vol_2",
+   705→      source_strategy_id: "st_vol_1",
+   706→      campaign_angle: "Meet your barista",
+   707→      messaging_pillar: "The people behind your cup — local, named, yours",
+   708→      channel_suitability: ["Instagram", "TikTok"],
+   709→      confidence: "high",
+   710→      requires_human_approval: false,
+   711→    },
+   712→    {
+   713→      feed_id: "cb_vol_3",
+   714→      source_strategy_id: "so_vol_2",
+   715→      campaign_angle: "From our roastery to your office",
+   716→      messaging_pillar: "Specialty-grade beans, delivered for teams",
+   717→      channel_suitability: ["LinkedIn", "Email", "Direct"],
+   718→      confidence: "medium",
+   719→      requires_human_approval: true,
+   720→    },
+   721→    {
+   722→      feed_id: "cb_vol_4",
+   723→      source_strategy_id: "wt_vol_1",
+   724→      campaign_angle: "Same great cup, day or night",
+   725→      messaging_pillar: "We fixed our evenings — come see after work",
+   726→      channel_suitability: ["Instagram", "In-store", "Email"],
+   727→      confidence: "medium",
+   728→      requires_human_approval: true,
+   729→    },
+   730→  ],
+   731→};
+   732→
+   733→const layaliStrategy: StrategyReportEnvelope = {
+   734→  report_id: "str_01HZXK9LAYALIRST9K2P",
+   735→  business_id: "biz_layali",
+   736→  created_at: iso(1000 * 60 * 60 * 30),
+   737→  business_type: "restaurant",
+   738→  strategic_posture: "Expand Beyond Walls",
+   739→  posture_rationale:
+   740→    "Layali's authenticity is constrained by physical capacity on its best nights. The winning move is to export the food advantage beyond the dining room (delivery bundles) while smoothing peak demand (reservations) — turning capacity from a ceiling into a choice.",
+   741→  tows_matrix: {
+   742→    SO: [
+   743→      {
+   744→        strategy_id: "so_lay_1",
+   745→        category: "SO",
+   746→        title: "Family-feast delivery bundles",
+   747→        description:
+   748→          "Package the authentic-food strength + family-dining value into delivery 'family feast' bundles on aggregators.",
+   749→        leverages: ["s_lay_01", "s_lay_02", "o_lay_01"],
+   750→        effort: 5,
+   751→        impact: 9,
+   752→        time_horizon: "0-3 months",
+   753→        confidence: 0.76,
+   754→      },
+   755→    ],
+   756→    ST: [
+   757→      {
+   758→        strategy_id: "st_lay_1",
+   759→        category: "ST",
+   760→        title: "Authenticity-led brand defense vs. cloud kitchens",
+   761→        description:
+   762→          "Lean into 'real kitchen, real recipes' storytelling cloud kitchens can't match — origin chef content, family-recipe series.",
+   763→        leverages: ["s_lay_01", "t_lay_01"],
+   764→        effort: 4,
+   765→        impact: 7,
+   766→        time_horizon: "0-3 months",
+   767→        confidence: 0.7,
+   768→      },
+   769→    ],
+   770→    WO: [
+   771→      {
+   772→        strategy_id: "wo_lay_1",
+   773→        category: "WO",
+   774→        title: "Reservations + quoted wait times",
+   775→        description:
+   776→          "Address weekend wait weakness while capturing the reservation opportunity: online booking + SMS waitlist with live quotes.",
+   777→        leverages: ["w_lay_01", "o_lay_02"],
+   778→        effort: 5,
+   779→        impact: 8,
+   780→        time_horizon: "0-3 months",
+   781→        confidence: 0.78,
+   782→      },
+   783→      {
+   784→        strategy_id: "wo_lay_2",
+   785→        category: "WO",
+   786→        title: "Peak-shift service playbook",
+   787→        description:
+   788→          "Fix service attentiveness weakness by codifying a peak-hour service sequence + runner role to reduce forgotten orders.",
+   789→        leverages: ["w_lay_02", "o_lay_02"],
+   790→        effort: 4,
+   791→        impact: 6,
+   792→        time_horizon: "1-3 months",
+   793→        confidence: 0.72,
+   794→      },
+   795→    ],
+   796→    WT: [
+   797→      {
+   798→        strategy_id: "wt_lay_1",
+   799→        category: "WT",
+   800→        title: "Off-peak loyalty to reduce weekend dependency",
+   801→        description:
+   802→          "Under capacity + competition threats, shift demand to off-peak with weekday family promotions, reducing weekend bottleneck exposure.",
+   803→        leverages: ["w_lay_01", "t_lay_01"],
+   804→        effort: 4,
+   805→        impact: 6,
+   806→        time_horizon: "1-3 months",
+   807→        confidence: 0.66,
+   808→      },
+   809→    ],
+   810→  },
+   811→  priority_action_plan: [
+   812→    {
+   813→      action_id: "pa_lay_1",
+   814→      title: "Launch family-feast delivery bundles",
+   815→      description:
+   816→        "3 bundle tiers on aggregators + own-channel, with family-quantity portions. Target 15% delivery revenue mix in 90 days.",
+   817→      priority: "P0",
+   818→      owner: "Operations + Marketing",
+   819→      effort: 5,
+   820→      impact: 9,
+   821→      timeframe: "0-3 months",
+   822→      kpi: "Delivery = 15% of revenue; bundle NPS > 60",
+   823→      dependencies: ["so_lay_1"],
+   824→    },
+   825→    {
+   826→      action_id: "pa_lay_2",
+   827→      title: "Deploy reservations + live waitlist",
+   828→      description:
+   829→        "Online booking + SMS waitlist with accurate quotes; reduce walk-away rate on peak nights.",
+   830→      priority: "P1",
+   831→      owner: "Operations Manager",
+   832→      effort: 5,
+   833→      impact: 8,
+   834→      timeframe: "0-3 months",
+   835→      kpi: "Peak walk-away ↓40%; 30% tables reserved",
+   836→      dependencies: ["wo_lay_1"],
+   837→    },
+   838→    {
+   839→      action_id: "pa_lay_3",
+   840→      title: "Authenticity brand series",
+   841→      description:
+   842→        "Chef + family-recipe content series to defend against cloud-kitchen price competition.",
+   843→      priority: "P2",
+   844→      owner: "Marketing Lead",
+   845→      effort: 4,
+   846→      impact: 7,
+   847→      timeframe: "1-3 months",
+   848→      kpi: "+20% branded search; 2 viral recipe posts",
+   849→      dependencies: ["st_lay_1"],
+   850→    },
+   851→  ],
+   852→  resource_assessment: [
+   853→    {
+   854→      resource_id: "res_lay_1",
+   855→      resource_type: "technology",
+   856→      name: "Reservations + waitlist system",
+   857→      current_state: "Phone-only booking",
+   858→      required_state: "Online booking + SMS waitlist",
+   859→      gap: "high",
+   860→      estimated_cost_usd: 7000,
+   861→    },
+   862→    {
+   863→      resource_id: "res_lay_2",
+   864→      resource_type: "human",
+   865→      name: "Delivery/kitchen expo role",
+   866→      current_state: "No dedicated expo for delivery orders",
+   867→      required_state: "Dedicated expo during peak delivery windows",
+   868→      gap: "medium",
+   869→      estimated_cost_usd: 12000,
+   870→    },
+   871→    {
+   872→      resource_id: "res_lay_3",
+   873→      resource_type: "brand",
+   874→      name: "Chef + recipe content production",
+   875→      current_state: "Occasional posts",
+   876→      required_state: "Bi-weekly recipe/chef video series",
+   877→      gap: "low",
+   878→      estimated_cost_usd: 5000,
+   879→    },
+   880→  ],
+   881→  campaign_brief_feed: [
+   882→    {
+   883→      feed_id: "cb_lay_1",
+   884→      source_strategy_id: "so_lay_1",
+   885→      campaign_angle: "Grandma's table, delivered",
+   886→      messaging_pillar: "The family feast that tastes like home, now at your door",
+   887→      channel_suitability: ["Instagram", "TikTok", "Delivery apps", "Email"],
+   888→      confidence: "high",
+   889→      requires_human_approval: false,
+   890→    },
+   891→    {
+   892→      feed_id: "cb_lay_2",
+   893→      source_strategy_id: "wo_lay_1",
+   894→      campaign_angle: "Book your Friday, skip the wait",
+   895→      messaging_pillar: "Reserve your table — we'll have it ready",
+   896→      channel_suitability: ["Instagram", "Google", "SMS"],
+   897→      confidence: "high",
+   898→      requires_human_approval: false,
+   899→    },
+   900→    {
+   901→      feed_id: "cb_lay_3",
+   902→      source_strategy_id: "st_lay_1",
+   903→      campaign_angle: "Real kitchen. Real recipes.",
+   904→      messaging_pillar: "Not a cloud kitchen — a family kitchen since day one",
+   905→      channel_suitability: ["Instagram", "TikTok"],
+   906→      confidence: "medium",
+   907→      requires_human_approval: true,
+   908→    },
+   909→  ],
+   910→};
+   911→
+   912→const glowStrategy: StrategyReportEnvelope = {
+   913→  report_id: "str_01HZXKAGLOWSALON4F7T",
+   914→  business_id: "biz_glow_salon",
+   915→  created_at: iso(1000 * 60 * 60 * 50),
+   916→  business_type: "salon",
+   917→  strategic_posture: "Digital-First Loyalty",
+   918→  posture_rationale:
+   919→    "Glow's edge is relationship + environment; its leak is booking friction. A digital-first loyalty posture — self-serve booking tied to a visit ladder — simultaneously removes the leak and compounds the edge, while a bounded trial package widens the funnel.",
+   920→  tows_matrix: {
+   921→    SO: [
+   922→      {
+   923→        strategy_id: "so_glow_1",
+   924→        category: "SO",
+   925→        title: "Self-serve booking + loyalty ladder",
+   926→        description:
+   927→          "Combine the stylist-loyalty strength with the digital booking opportunity into a single app: book, track visits, unlock tiers.",
+   928→        leverages: ["s_glow_01", "o_glow_01"],
+   929→        effort: 6,
+   930→        impact: 9,
+   931→        time_horizon: "0-3 months",
+   932→        confidence: 0.8,
+   933→      },
+   934→    ],
+   935→    ST: [
+   936→      {
+   937→        strategy_id: "st_glow_1",
+   938→        category: "ST",
+   939→        title: "Relationship-led content vs. indie stylists",
+   940→        description:
+   941→          "Counter home-studio competition with 'your stylist knows you' content that indie operators can't sustain.",
+   942→        leverages: ["s_glow_01", "t_glow_01"],
+   943→        effort: 4,
+   944→        impact: 7,
+   945→        time_horizon: "0-3 months",
+   946→        confidence: 0.68,
+   947→      },
+   948→    ],
+   949→    WO: [
+   950→      {
+   951→        strategy_id: "wo_glow_1",
+   952→        category: "WO",
+   953→        title: "'Glow Introduction' trial package",
+   954→        description:
+   955→          "A bounded first-visit package (express service + consultation) to convert price-hesitant new clients without discounting premium services.",
+   956→        leverages: ["w_glow_02", "o_glow_02"],
+   957→        effort: 3,
+   958→        impact: 7,
+   959→        time_horizon: "0-2 months",
+   960→        confidence: 0.74,
+   961→      },
+   962→    ],
+   963→    WT: [
+   964→      {
+   965→        strategy_id: "wt_glow_1",
+   966→        category: "WT",
+   967→        title: "Premium value communication",
+   968→        description:
+   969→          "Address pricing weakness + indie competition by communicating the full value (products, environment, guarantee) so price feels justified.",
+   970→        leverages: ["w_glow_02", "t_glow_01"],
+   971→        effort: 4,
+   972→        impact: 6,
+   973→        time_horizon: "1-3 months",
+   974→        confidence: 0.62,
+   975→      },
+   976→    ],
+   977→  },
+   978→  priority_action_plan: [
+   979→    {
+   980→      action_id: "pa_glow_1",
+   981→      title: "Ship booking + loyalty app",
+   982→      description:
+   983→        "Self-serve booking, visit tracking, tier rewards. Cut phone-booking share to <30%.",
+   984→      priority: "P0",
+   985→      owner: "Owner + Tech",
+   986→      effort: 6,
+   987→      impact: 9,
+   988→      timeframe: "0-3 months",
+   989→      kpi: "60% bookings online; +18% visit frequency",
+   990→      dependencies: ["so_glow_1"],
+   991→    },
+   992→    {
+   993→      action_id: "pa_glow_2",
+   994→      title: "Launch 'Glow Introduction' package",
+   995→      description:
+   996→        "First-visit express package to lower trial friction; cap availability to protect premium positioning.",
+   997→      priority: "P1",
+   998→      owner: "Front Desk Lead",
+   999→      effort: 3,
+  1000→      impact: 7,
+  1001→      timeframe: "0-2 months",
+  1002→      kpi: "+30% new-client trials; 35% convert to full service",
+  1003→      dependencies: ["wo_glow_1"],
+  1004→    },
+  1005→    {
+  1006→      action_id: "pa_glow_3",
+  1007→      title: "'Your stylist' content series",
+  1008→      description:
+  1009→        "Weekly stylist-led content defending against indie competition.",
+  1010→      priority: "P2",
+  1011→      owner: "Marketing",
+  1012→      effort: 4,
+  1013→      impact: 6,
+  1014→      timeframe: "1-3 months",
+  1015→      kpi: "+25% branded DMs; 3 stylists hit 5k+ followers",
+  1016→      dependencies: ["st_glow_1"],
+  1017→    },
+  1018→  ],
+  1019→  resource_assessment: [
+  1020→    {
+  1021→      resource_id: "res_glow_1",
+  1022→      resource_type: "technology",
+  1023→      name: "Booking + loyalty platform",
+  1024→      current_state: "Phone-only",
+  1025→      required_state: "App/web booking + visit tracking + tiers",
+  1026→      gap: "high",
+  1027→      estimated_cost_usd: 11000,
+  1028→    },
+  1029→    {
+  1030→      resource_id: "res_glow_2",
+  1031→      resource_type: "brand",
+  1032→      name: "Stylist content production",
+  1033→      current_state: "Irregular posts",
+  1034→      required_state: "Weekly stylist-led content",
+  1035→      gap: "medium",
+  1036→      estimated_cost_usd: 6000,
+  1037→    },
+  1038→    {
+  1039→      resource_id: "res_glow_3",
+  1040→      resource_type: "human",
+  1041→      name: "Front-desk digital handoff",
+  1042→      current_state: "Front desk handles all booking",
+  1043→      required_state: "Front desk trained for digital onboarding",
+  1044→      gap: "low",
+  1045→      estimated_cost_usd: 2000,
+  1046→    },
+  1047→  ],
+  1048→  campaign_brief_feed: [
+  1049→    {
+  1050→      feed_id: "cb_glow_1",
+  1051→      source_strategy_id: "so_glow_1",
+  1052→      campaign_angle: "Book in seconds, glow for weeks",
+  1053→      messaging_pillar: "Your stylist, your time — now bookable in the app",
+  1054→      channel_suitability: ["Instagram", "TikTok", "WhatsApp", "Email"],
+  1055→      confidence: "high",
+  1056→      requires_human_approval: false,
+  1057→    },
+  1058→    {
+  1059→      feed_id: "cb_glow_2",
+  1060→      source_strategy_id: "wo_glow_1",
+  1061→      campaign_angle: "Meet Glow — your first visit, simplified",
+  1062→      messaging_pillar: "A low-risk intro to the Glow experience",
+  1063→      channel_suitability: ["Instagram", "TikTok", "In-salon"],
+  1064→      confidence: "medium",
+  1065→      requires_human_approval: true,
+  1066→    },
+  1067→    {
+  1068→      feed_id: "cb_glow_3",
+  1069→      source_strategy_id: "st_glow_1",
+  1070→      campaign_angle: "Your stylist knows your hair",
+  1071→      messaging_pillar: "Consistency a home stylist can't give you",
+  1072→      channel_suitability: ["Instagram", "TikTok"],
+  1073→      confidence: "medium",
+  1074→      requires_human_approval: true,
+  1075→    },
+  1076→  ],
+  1077→};
+  1078→
+  1079→/* ------------------------------------------------------------------ */
+  1080→/* Businesses                                                          */
+  1081→/* ------------------------------------------------------------------ */
+  1082→
+  1083→const businesses: Business[] = [
+  1084→  {
+  1085→    business_id: "biz_volume_cafe",
+  1086→    name: "Volume Cafe",
+  1087→    business_type: "cafe",
+  1088→    description: "Specialty coffee shop — single-origin pours, morning ritual spot.",
+  1089→    location: "Riyadh, SA",
+  1090→    review_count: 1284,
+  1091→    status: "active",
+  1092→    has_swot: true,
+  1093→    has_strategy: true,
+  1094→    has_campaigns: true,
+  1095→    created_at: iso(1000 * 60 * 60 * 24 * 40),
+  1096→    updated_at: iso(1000 * 60 * 60 * 6),
+  1097→    last_pipeline_run: iso(1000 * 60 * 60 * 6),
+  1098→  },
+  1099→  {
+  1100→    business_id: "biz_layali",
+  1101→    name: "Layali Restaurant",
+  1102→    business_type: "restaurant",
+  1103→    description: "Levantine family dining — authentic recipes, generous portions.",
+  1104→    location: "Jeddah, SA",
+  1105→    review_count: 968,
+  1106→    status: "active",
+  1107→    has_swot: true,
+  1108→    has_strategy: true,
+  1109→    has_campaigns: true,
+  1110→    created_at: iso(1000 * 60 * 60 * 24 * 25),
+  1111→    updated_at: iso(1000 * 60 * 60 * 30),
+  1112→    last_pipeline_run: iso(1000 * 60 * 60 * 30),
+  1113→  },
+  1114→  {
+  1115→    business_id: "biz_glow_salon",
+  1116→    name: "Glow Salon & Spa",
+  1117→    business_type: "salon",
+  1118→    description: "Premium hair & beauty — trusted stylists, calm ambiance.",
+  1119→    location: "Dubai, UAE",
+  1120→    review_count: 542,
+  1121→    status: "active",
+  1122→    has_swot: true,
+  1123→    has_strategy: true,
+  1124→    has_campaigns: true,
+  1125→    created_at: iso(1000 * 60 * 60 * 24 * 18),
+  1126→    updated_at: iso(1000 * 60 * 60 * 50),
+  1127→    last_pipeline_run: iso(1000 * 60 * 60 * 50),
+  1128→  },
+  1129→  {
+  1130→    business_id: "biz_pulse_gym",
+  1131→    name: "Pulse Fitness",
+  1132→    business_type: "gym",
+  1133→    description: "Boutique fitness studio — strength & HIIT classes.",
+  1134→    location: "Riyadh, SA",
+  1135→    review_count: 312,
+  1136→    status: "draft",
+  1137→    has_swot: false,
+  1138→    has_strategy: false,
+  1139→    has_campaigns: false,
+  1140→    created_at: iso(1000 * 60 * 60 * 24 * 5),
+  1141→    updated_at: iso(1000 * 60 * 60 * 24 * 2),
+  1142→  },
+  1143→];
+  1144→
+  1145→const swotReports: Record<string, SWOTReportEnvelope> = {
+  1146→  biz_volume_cafe: volumeCafeSwot,
+  1147→  biz_layali: layaliSwot,
+  1148→  biz_glow_salon: glowSwot,
+  1149→};
+  1150→
+  1151→const strategyReports: Record<string, StrategyReportEnvelope> = {
+  1152→  biz_volume_cafe: volumeCafeStrategy,
+  1153→  biz_layali: layaliStrategy,
+  1154→  biz_glow_salon: glowStrategy,
+  1155→};
+  1156→
+  1157→/* ------------------------------------------------------------------ */
+  1158→/* Pipeline                                                            */
+  1159→/* ------------------------------------------------------------------ */
+  1160→
+  1161→const STAGE_META: Record<PipelineStageName, string> = {
+  1162→  queued: "Queued",
+  1163→  uploading: "Uploading",
+  1164→  parsing: "Parsing reviews",
+  1165→  themes: "Theme extraction",
+  1166→  swot: "SWOT Agent v7",
+  1167→  strategy: "Strategy Agent v1",
+  1168→  campaigns: "Campaign briefs",
+  1169→  mongo: "MongoDB persistence",
+  1170→  done: "Done",
+  1171→};
+  1172→
+  1173→function buildStages(upTo: PipelineStageName): PipelineStage[] {
+  1174→  const order: PipelineStageName[] = [
+  1175→    "queued",
+  1176→    "uploading",
+  1177→    "parsing",
+  1178→    "themes",
+  1179→    "swot",
+  1180→    "strategy",
+  1181→    "campaigns",
+  1182→    "mongo",
+  1183→    "done",
+  1184→  ];
+  1185→  const idx = order.indexOf(upTo);
+  1186→  return order.map((name, i) => {
+  1187→    const status: PipelineStage["status"] =
+  1188→      i < idx ? "completed" : i === idx ? "running" : "pending";
+  1189→    return {
+  1190→      name,
+  1191→      label: STAGE_META[name],
+  1192→      status,
+  1193→      started_at: i <= idx ? iso(1000 * 60 * (idx - i)) : undefined,
+  1194→      completed_at: i < idx ? iso(1000 * 60 * (idx - i - 1)) : undefined,
+  1195→    };
+  1196→  });
+  1197→}
+  1198→
+  1199→function completedPipeline(businessId: string): PipelineResult {
+  1200→  return {
+  1201→    business_id: businessId,
+  1202→    run_id: `run_${Math.random().toString(36).slice(2, 10)}`,
+  1203→    status: "completed",
+  1204→    current_stage: "done",
+  1205→    stages: buildStages("done").map((s) => ({
+  1206→      ...s,
+  1207→      status: "completed" as const,
+  1208→      completed_at: s.completed_at ?? iso(0),
+  1209→    })),
+  1210→    started_at: iso(1000 * 60 * 2),
+  1211→    completed_at: iso(0),
+  1212→    report_ids: {
+  1213→      swot: swotReports[businessId]?.report_id,
+  1214→      strategy: strategyReports[businessId]?.report_id,
+  1215→    },
+  1216→  };
+  1217→}
+  1218→
+  1219→/* ------------------------------------------------------------------ */
+  1220→/* Public API                                                          */
+  1221→/* ------------------------------------------------------------------ */
+  1222→
+  1223→export function listBusinesses(): BusinessListResponse {
+  1224→  return { businesses, total: businesses.length };
+  1225→}
+  1226→
+  1227→export function getBusiness(businessId: string): Business | undefined {
+  1228→  return businesses.find((b) => b.business_id === businessId);
+  1229→}
+  1230→
+  1231→export function createBusiness(body: CreateBusinessRequest): Business {
+  1232→  const id = `biz_${body.name.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24)}_${Math.random().toString(36).slice(2, 6)}`;
+  1233→  const b: Business = {
+  1234→    business_id: id,
+  1235→    name: body.name,
+  1236→    business_type: body.business_type,
+  1237→    description: body.description,
+  1238→    location: body.location,
+  1239→    review_count: 0,
+  1240→    status: "draft",
+  1241→    has_swot: false,
+  1242→    has_strategy: false,
+  1243→    has_campaigns: false,
+  1244→    created_at: new Date().toISOString(),
+  1245→    updated_at: new Date().toISOString(),
+  1246→  };
+  1247→  businesses.unshift(b);
+  1248→  return b;
+  1249→}
+  1250→
+  1251→export function getSwotReport(businessId: string): SWOTReportEnvelope | undefined {
+  1252→  return swotReports[businessId];
+  1253→}
+  1254→
+  1255→export function getStrategyReport(
+  1256→  businessId: string,
+  1257→): StrategyReportEnvelope | undefined {
+  1258→  return strategyReports[businessId];
+  1259→}
+  1260→
+  1261→export function getCampaignsReport(
+  1262→  businessId: string,
+  1263→): CampaignsReportEnvelope | undefined {
+  1264→  const strat = strategyReports[businessId];
+  1265→  const swot = swotReports[businessId];
+  1266→  if (!strat) return undefined;
+  1267→  return {
+  1268→    report_id: `cmp_${strat.report_id.slice(4)}`,
+  1269→    business_id: businessId,
+  1270→    created_at: strat.created_at,
+  1271→    business_type: strat.business_type,
+  1272→    engine_version: "campaign-feed-v1",
+  1273→    campaigns: strat.campaign_brief_feed,
+  1274→    meta: swot?.meta ?? {
+  1275→      llm_provider_used: "vertex_ai",
+  1276→      llm_model_used: "gemini-2.5-flash",
+  1277→      fallback_used: false,
+  1278→      processing_time_ms: 4200,
+  1279→      cost_estimate_usd: 0.06,
+  1280→    },
+  1281→  };
+  1282→}
+  1283→
+  1284→export function runFullPipeline(businessId: string): PipelineResult {
+  1285→  const b = getBusiness(businessId);
+  1286→  if (b) {
+  1287→    b.status = "active";
+  1288→    b.has_swot = true;
+  1289→    b.has_strategy = true;
+  1290→    b.has_campaigns = true;
+  1291→    b.last_pipeline_run = new Date().toISOString();
+  1292→    b.updated_at = new Date().toISOString();
+  1293→  }
+  1294→  return completedPipeline(businessId);
+  1295→}
+  1296→
+  1297→export function uploadReviewsAndRun(
+  1298→  businessId: string,
+  1299→  _file: File,
+  1300→): PipelineResult {
+  1301→  const b = getBusiness(businessId);
+  1302→  if (b) {
+  1303→    // Simulate scraped review ingestion adding to review count.
+  1304→    b.review_count += Math.floor(200 + Math.random() * 600);
+  1305→    b.status = "active";
+  1306→    b.has_swot = true;
+  1307→    b.has_strategy = true;
+  1308→    b.has_campaigns = true;
+  1309→    b.last_pipeline_run = new Date().toISOString();
+  1310→    b.updated_at = new Date().toISOString();
+  1311→  }
+  1312→  return completedPipeline(businessId);
+  1313→}
+  1314→
+  1315→export function getHistory(): { entries: HistoryEntry[]; total: number } {
+  1316→  const entries: HistoryEntry[] = [];
+  1317→  for (const b of businesses) {
+  1318→    const swot = swotReports[b.business_id];
+  1319→    const strat = strategyReports[b.business_id];
+  1320→    if (swot) {
+  1321→      entries.push({
+  1322→        report_id: swot.report_id,
+  1323→        business_id: b.business_id,
+  1324→        business_name: b.name,
+  1325→        business_type: b.business_type,
+  1326→        kind: "swot",
+  1327→        engine_version: swot.engine_version,
+  1328→        llm_model_used: swot.meta.llm_model_used,
+  1329→        fallback_used: swot.meta.fallback_used,
+  1330→        processing_time_ms: swot.meta.processing_time_ms,
+  1331→        cost_estimate_usd: swot.meta.cost_estimate_usd,
+  1332→        created_at: swot.created_at,
+  1333→      });
+  1334→    }
+  1335→    if (strat) {
+  1336→      entries.push({
+  1337→        report_id: strat.report_id,
+  1338→        business_id: b.business_id,
+  1339→        business_name: b.name,
+  1340→        business_type: b.business_type,
+  1341→        kind: "strategy",
+  1342→        engine_version: "strategy-agent-v1",
+  1343→        llm_model_used: "gemini-2.5-flash",
+  1344→        fallback_used: false,
+  1345→        processing_time_ms: 6800,
+  1346→        cost_estimate_usd: 0.11,
+  1347→        created_at: strat.created_at,
+  1348→      });
+  1349→      entries.push({
+  1350→        report_id: `cmp_${strat.report_id.slice(4)}`,
+  1351→        business_id: b.business_id,
+  1352→        business_name: b.name,
+  1353→        business_type: b.business_type,
+  1354→        kind: "campaigns",
+  1355→        engine_version: "campaign-feed-v1",
+  1356→        llm_model_used: "gemini-2.5-flash",
+  1357→        fallback_used: false,
+  1358→        processing_time_ms: 4200,
+  1359→        cost_estimate_usd: 0.06,
+  1360→        created_at: strat.created_at,
+  1361→      });
+  1362→    }
+  1363→  }
+  1364→  entries.sort((a, b) => +new Date(b.created_at) - +new Date(a.created_at));
+  1365→  return { entries, total: entries.length };
+  1366→}
+  1367→
+  1368→export type { CampaignBrief };
+  1369→
