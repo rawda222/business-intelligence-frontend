@@ -23,18 +23,20 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Business Intelligence Platform — Multi-Agent AI SaaS",
+  title: "Lumora — Your AI Brand Companion",
   description:
-    "Multi-agent AI SaaS for business analysis. SWOT Agent v7 + Strategy Agent v1 powered by Vertex AI Gemini 2.5 Flash.",
+    "Lumora is your AI-powered brand twin — turning customer insights into smart strategies, posters, and reels. Powered by Multi-Agent AI.",
   keywords: [
-    "Business Intelligence",
+    "Lumora",
+    "AI Brand Intelligence",
+    "Brand Twin",
     "SWOT Analysis",
-    "TOWS Matrix",
     "AI Strategy",
-    "Gemini",
-    "Multi-Agent",
+    "Marketing AI",
+    "Brand Identity AI",
+    "Multi-Agent AI",
   ],
-  authors: [{ name: "Business Intelligence Platform" }],
+  authors: [{ name: "Lumora" }],
   icons: {
     icon: "/logo.svg",
   },

@@ -77,7 +77,9 @@ export function DashboardView() {
   const historyQ = useHistory();
 
   const businesses = businessesQ.data?.businesses ?? [];
-  const history = historyQ.data?.entries ?? [];
+  const history = Array.isArray(historyQ.data)
+  ? historyQ.data 
+  : ((historyQ.data as any)?.entries ?? (historyQ.data as any)?.items ?? []);
 
   const reportsCount = history.length;
   const reviewsAnalyzed = businesses.reduce(

@@ -33,7 +33,7 @@ const volumeCafeSwot: SWOTReportEnvelope = {
   business_id: "biz_volume_cafe",
   created_at: iso(1000 * 60 * 60 * 6),
   business_type: "cafe",
-  engine_version: "swot-agent-v7",
+  engine_version: "swot-agent",
   swot_report: {
     strengths: [
       {
@@ -225,7 +225,7 @@ const layaliSwot: SWOTReportEnvelope = {
   business_id: "biz_layali",
   created_at: iso(1000 * 60 * 60 * 30),
   business_type: "restaurant",
-  engine_version: "swot-agent-v7",
+  engine_version: "swot-agent",
   swot_report: {
     strengths: [
       {
@@ -350,7 +350,7 @@ const glowSwot: SWOTReportEnvelope = {
   business_id: "biz_glow_salon",
   created_at: iso(1000 * 60 * 60 * 50),
   business_type: "salon",
-  engine_version: "swot-agent-v7",
+  engine_version: "swot-agent",
   swot_report: {
     strengths: [
       {
@@ -1182,8 +1182,8 @@ const STAGE_META: Record<PipelineStageName, string> = {
   uploading: "Uploading",
   parsing: "Parsing reviews",
   themes: "Theme extraction",
-  swot: "SWOT Agent v7",
-  strategy: "Strategy Agent v1",
+  swot: "SWOT Agent",
+  strategy: "Strategy Agent",
   campaigns: "Campaign briefs",
   mongo: "MongoDB persistence",
   done: "Done",
@@ -1331,7 +1331,7 @@ function buildGymReports(b: Business): { swot: SWOTReportEnvelope; strategy: Str
     business_id: b.business_id,
     created_at: now,
     business_type: b.business_type,
-    engine_version: "swot-agent-v7",
+    engine_version: "swot-agent",
     swot_report: {
       strengths: [
         {
@@ -1557,7 +1557,7 @@ function buildGenericReports(b: Business): { swot: SWOTReportEnvelope; strategy:
     business_id: b.business_id,
     created_at: now,
     business_type: b.business_type,
-    engine_version: "swot-agent-v7",
+    engine_version: "swot-agent",
     swot_report: {
       strengths: [
         {
@@ -1795,7 +1795,7 @@ export function getHistory(): { entries: HistoryEntry[]; total: number } {
         business_name: b.name,
         business_type: b.business_type,
         kind: "strategy",
-        engine_version: "strategy-agent-v1",
+        engine_version: "strategy-agent",
         llm_model_used: "gemini-2.5-flash",
         fallback_used: false,
         processing_time_ms: 6800,

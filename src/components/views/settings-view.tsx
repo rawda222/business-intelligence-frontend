@@ -340,7 +340,7 @@ function EngineCard() {
     {
       icon: Bot,
       label: t("settings.engine.agents"),
-      value: "SWOT Agent v7 · Strategy Agent v1",
+      value: "SWOT Agent · Strategy Agent",
       accent: "from-amber-500/20 to-amber-500/5 text-amber-500",
     },
   ];
@@ -389,7 +389,7 @@ function EngineCard() {
 
 function BackendCard() {
   const { t } = useT();
-  const [realMode, setRealMode] = useState(false);
+  const [realMode, setRealMode] = useState(true);
 
   const apiUrl = realMode
     ? "http://localhost:8000/api/v1"

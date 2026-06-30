@@ -38,6 +38,31 @@ const MID = 5.5;
  * radius ∝ confidence) and priority actions (indigo diamonds, radius ∝
  * impact). Bubble size is driven by a ZAxis dataKey="size".
  */
+// Helper: convert strings/values to 1-10 numbers
+function toNum(value: any, fallback: number = 5): number {
+  if (typeof value === "number" && !isNaN(value)) return value;
+  if (typeof value === "string") {
+    const v = value.toLowerCase().trim();
+    if (v === "low") return 3;
+    if (v === "medium" || v === "mid") return 6;
+    if (v === "high") return 9;
+    const parsed = parseFloat(v);
+    if (!isNaN(parsed)) return parsed;
+  }
+  return fallback;
+}
+
+function toConfidence(value: any): number {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    const v = value.toLowerCase();
+    if (v === "high" || v === "confirmed") return 0.9;
+    if (v === "medium" || v === "probable") return 0.6;
+    if (v === "low" || v === "exploratory") return 0.3;
+  }
+  return 0.5;
+}
+
 export default function EffortImpactScatter({
   strategies,
   actions,
@@ -47,20 +72,20 @@ export default function EffortImpactScatter({
 }) {
   const { t, isRTL } = useT();
 
-  const strategyData: Point[] = (strategies ?? []).map((s) => ({
-    title: s.title,
-    effort: s.effort,
-    impact: s.impact,
-    size: s.confidence,
-    confidence: s.confidence,
+const strategyData: Point[] = (strategies ?? []).map((s: any) => ({
+    title: s.title || "Strategy",
+    effort: toNum(s.effort || s.estimated_effort, 5),
+    impact: toNum(s.impact || s.estimated_impact, 5),
+    size: toConfidence(s.confidence),
+    confidence: toConfidence(s.confidence),
     kind: "strategy",
   }));
 
-  const actionData: Point[] = (actions ?? []).map((a) => ({
-    title: a.title,
-    effort: a.effort,
-    impact: a.impact,
-    size: a.impact / 10,
+  const actionData: Point[] = (actions ?? []).map((a: any) => ({
+    title: a.title || "Action",
+    effort: toNum(a.effort || a.estimated_effort, 5),
+    impact: toNum(a.impact || a.estimated_impact, 5),
+    size: toNum(a.impact || a.estimated_impact, 5) / 10,
     kind: "action",
   }));
 

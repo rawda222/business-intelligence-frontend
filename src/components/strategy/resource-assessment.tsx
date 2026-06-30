@@ -57,12 +57,6 @@ const GAP_LABEL_KEY: Record<ResourceGap, TranslationKey> = {
   high: "strategy.gap.high",
 };
 
-/**
- * Resource Assessment — summary header (total estimated cost + count by gap)
- * followed by a responsive grid of resource cards. Each card shows the
- * resource type icon, name, current → required transition with an arrow,
- * gap badge (colored via `gapColorClass`) and estimated cost.
- */
 export default function ResourceAssessment({
   resources,
 }: {
@@ -75,11 +69,15 @@ export default function ResourceAssessment({
     0,
   );
   const counts: Record<ResourceGap, number> = { low: 0, medium: 0, high: 0 };
-  for (const r of resources ?? []) counts[r.gap]++;
+  for (const r of resources ?? []) {
+    const g = (r.gap && counts[r.gap as ResourceGap] !== undefined)
+      ? (r.gap as ResourceGap)
+      : "medium";
+    counts[g]++;
+  }
 
   return (
     <div className="space-y-4">
-      {/* Summary header */}
       <Card className="rounded-2xl glass p-4">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <div>
@@ -114,13 +112,16 @@ export default function ResourceAssessment({
         </div>
       </Card>
 
-      {/* Resource cards */}
       {(resources ?? []).length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">—</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {resources.map((r, idx) => (
-            <ResourceCard key={r.resource_id} r={r} idx={idx} />
+            <ResourceCard
+              key={r.resource_id || r.name || `resource-${idx}`}
+              r={r}
+              idx={idx}
+            />
           ))}
         </div>
       )}
@@ -151,15 +152,27 @@ function GapChip({
 }
 
 function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
-  const { t, isRTL } = useT();
-  const Icon = TYPE_ICON[r.resource_type];
-  const accent = TYPE_ACCENT[r.resource_type];
+  const { t } = useT();
+
+  // Safe fallbacks
+  const validTypes = ["human", "capital", "technology", "data", "brand"];
+  const resourceType = (r.resource_type && validTypes.includes(r.resource_type as string))
+    ? (r.resource_type as ResourceItem["resource_type"])
+    : "capital";
+
+  const Icon = TYPE_ICON[resourceType] || DollarSign;
+  const accent = TYPE_ACCENT[resourceType] || TYPE_ACCENT.capital;
+
+  const validGaps = ["low", "medium", "high"];
+  const safeGap: ResourceGap = (r.gap && validGaps.includes(r.gap as string))
+    ? (r.gap as ResourceGap)
+    : "medium";
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: idx * 0.05 }}
+      transition={{ delay: idx * 0.04 }}
     >
       <Card className="h-full rounded-xl glass p-4">
         <div className="flex items-start gap-3">
@@ -173,12 +186,14 @@ function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-semibold leading-snug">{r.name}</p>
+              <p className="text-sm font-semibold leading-snug">
+                {r.name || "Resource"}
+              </p>
               <Badge
                 variant="outline"
                 className="shrink-0 rounded-md text-[10px] font-medium text-muted-foreground"
               >
-                {t(TYPE_LABEL_KEY[r.resource_type])}
+                {t(TYPE_LABEL_KEY[resourceType])}
               </Badge>
             </div>
 
@@ -187,7 +202,7 @@ function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
                 <span className="font-medium text-foreground/80">
                   {t("strategy.current")}:
                 </span>{" "}
-                {r.current_state}
+                {r.current_state || "—"}
               </p>
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <ArrowRight className="h-3 w-3 shrink-0 rtl:rotate-180" />
@@ -195,7 +210,7 @@ function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
                   <span className="font-medium text-foreground/80">
                     {t("strategy.required")}:
                   </span>{" "}
-                  {r.required_state}
+                  {r.required_state || "—"}
                 </span>
               </div>
             </div>
@@ -212,10 +227,10 @@ function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
             <span
               className={cn(
                 "inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold",
-                gapColorClass(r.gap),
+                gapColorClass(safeGap),
               )}
             >
-              {t(GAP_LABEL_KEY[r.gap])}
+              {t(GAP_LABEL_KEY[safeGap])}
             </span>
           </div>
           <div className="text-end">
@@ -223,7 +238,7 @@ function ResourceCard({ r, idx }: { r: ResourceItem; idx: number }) {
               {t("strategy.resources.cost")}
             </p>
             <p className="font-mono text-sm font-bold">
-              {formatCurrency(r.estimated_cost_usd)}
+              {formatCurrency(r.estimated_cost_usd || 0)}
             </p>
           </div>
         </div>

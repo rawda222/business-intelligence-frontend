@@ -71,7 +71,12 @@ export function HistoryView() {
   const navigate = useUiStore((s) => s.navigate);
   const { data, isLoading, isError } = useHistory();
 
-  const entries: HistoryEntry[] = data?.entries ?? [];
+  // ✅ Safe normalize - handles array, {entries: []}, or {items: []}
+const entries: HistoryEntry[] = Array.isArray(data) 
+  ? data 
+  : ((data as any)?.entries 
+      ?? (data as any)?.items 
+      ?? []);
 
   // Summary metrics
   const summary = useMemo(() => {

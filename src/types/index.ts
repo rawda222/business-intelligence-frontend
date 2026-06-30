@@ -1,7 +1,7 @@
 /**
  * Backend contract types — mirror the FastAPI Pydantic models exactly.
  * Source of truth: the platform API spec.
- * Provider: Vertex AI Gemini 2.5 Flash. Agents: SWOT Agent v7, Strategy Agent v1.
+ * Provider: Vertex AI Gemini 2.5 Flash. Agents: SWOT Agent, Strategy Agent.
  */
 
 /* ------------------------------------------------------------------ */

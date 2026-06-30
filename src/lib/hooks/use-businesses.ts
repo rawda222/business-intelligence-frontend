@@ -17,6 +17,11 @@ export function useBusinesses() {
   return useQuery({
     queryKey: businessKeys.all,
     queryFn: () => businessesApi.list(),
+    // ✅ Always refetch when component mounts
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale
+    gcTime: 0, // Don't cache
   });
 }
 
@@ -25,6 +30,8 @@ export function useBusiness(businessId: string | undefined) {
     queryKey: businessKeys.detail(businessId ?? ""),
     queryFn: () => businessesApi.get(businessId!),
     enabled: !!businessId,
+    refetchOnMount: "always",
+    staleTime: 0,
   });
 }
 
@@ -32,7 +39,11 @@ export function useCreateBusiness() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateBusinessRequest) => businessesApi.create(body),
-    onSuccess: () => qc.invalidateQueries({ queryKey: businessKeys.all }),
+    onSuccess: () => {
+      // ✅ Invalidate AND refetch
+      qc.invalidateQueries({ queryKey: businessKeys.all });
+      qc.refetchQueries({ queryKey: businessKeys.all });
+    },
   });
 }
 
@@ -43,6 +54,7 @@ export function useRunFullPipeline() {
     onSuccess: (_data, businessId) => {
       qc.invalidateQueries({ queryKey: businessKeys.all });
       qc.invalidateQueries({ queryKey: businessKeys.detail(businessId) });
+      qc.refetchQueries({ queryKey: businessKeys.all });
     },
   });
 }
@@ -55,6 +67,7 @@ export function useUploadReviews() {
     onSuccess: (_data, { businessId }) => {
       qc.invalidateQueries({ queryKey: businessKeys.all });
       qc.invalidateQueries({ queryKey: businessKeys.detail(businessId) });
+      qc.refetchQueries({ queryKey: businessKeys.all });
     },
   });
 }

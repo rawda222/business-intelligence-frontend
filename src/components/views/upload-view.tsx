@@ -111,6 +111,7 @@ export function UploadView() {
             setProgress(Math.round((e.loaded / (e.total || 1)) * 100)),
         },
       );
+      if (typeof window !== "undefined") localStorage.setItem("lastPipelineResult", JSON.stringify(res.data));
       setStatus("done");
       toast.success(t("toast.uploaded"), {
         description: selectedBusiness?.name,
@@ -205,7 +206,7 @@ export function UploadView() {
               <div>
                 <p className="text-sm font-medium">{t("upload.runAfter")}</p>
                 <p className="text-[11px] text-muted-foreground">
-                  {t("pipeline.title")} · SWOT Agent v7 + Strategy Agent v1
+                  {t("pipeline.title")} · SWOT Agent + Strategy Agent
                 </p>
               </div>
               <Switch
@@ -260,7 +261,7 @@ export function UploadView() {
             </ol>
             <div className="mt-5 rounded-xl border border-dashed border-border/60 bg-muted/20 p-3">
               <p className="text-[11px] font-medium text-foreground">
-                SWOT Agent v7 · Strategy Agent v1
+                SWOT Agent · Strategy Agent
               </p>
               <p className="mt-1 text-[10px] text-muted-foreground">
                 Vertex AI · Gemini 2.5 Flash

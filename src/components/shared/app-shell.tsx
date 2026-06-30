@@ -33,13 +33,13 @@ function Footer() {
       <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row md:px-6 lg:px-8">
         <p className="flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          {t("app.name")} · SWOT Agent v7 + Strategy Agent v1
+          {t("app.name")} · SWOT Agent + Strategy Agent
         </p>
         <p className="flex items-center gap-1.5">
           Vertex AI Gemini 2.5 Flash
           <span className="text-muted-foreground/50">·</span>
           <span className="inline-flex items-center gap-1">
-            Built with <Heart className="h-3 w-3 fill-rose-500 text-rose-500" /> Next.js
+            Lumora
           </span>
         </p>
       </div>

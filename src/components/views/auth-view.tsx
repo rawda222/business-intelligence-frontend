@@ -88,11 +88,11 @@ export function AuthView() {
             <ul className="space-y-3 text-sm text-primary-foreground/90">
               <li className="flex items-center gap-2.5">
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/15 text-xs font-bold">7</span>
-                SWOT Agent v7 — evidence-backed strengths & weaknesses
+                SWOT Agent — evidence-backed strengths & weaknesses
               </li>
               <li className="flex items-center gap-2.5">
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/15 text-xs font-bold">S</span>
-                Strategy Agent v1 — TOWS matrix & priority roadmap
+                Strategy Agent — TOWS matrix & priority roadmap
               </li>
               <li className="flex items-center gap-2.5">
                 <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/15 text-xs font-bold">★</span>

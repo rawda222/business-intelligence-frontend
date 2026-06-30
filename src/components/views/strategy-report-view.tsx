@@ -408,30 +408,37 @@ function buildPdfSections(
 ): { heading: string; html: string }[] {
   const sections: { heading: string; html: string }[] = [];
 
+  // ✅ Safe defaults
+  const strategicPosture = report.strategic_posture || "balanced";
+  const postureRationale = report.posture_rationale || "Strategic recommendations";
+  const towsMatrix = report.tows_matrix || { SO: [], ST: [], WO: [], WT: [] };
+  const priorityPlan = report.priority_action_plan || [];
+  const resources = report.resource_assessment || [];
+
   // Posture
   sections.push({
     heading: t("strategy.posture"),
     html: `
-      <h3>${escapeHtml(report.strategic_posture)}</h3>
-      <p>${escapeHtml(report.posture_rationale)}</p>
+      <h3>${escapeHtml(strategicPosture)}</h3>
+      <p>${escapeHtml(postureRationale)}</p>
     `,
   });
 
   // TOWS matrix
   const towsCards = TOWS_CATS.map((cat) => {
-    const items = report.tows_matrix?.[cat] ?? [];
+    const items = towsMatrix[cat] || [];
     const itemsHtml = items.length
       ? items
           .map(
             (s) => `
           <div class="card">
-            <h3>${escapeHtml(s.title)}</h3>
-            <p>${escapeHtml(s.description)}</p>
+            <h3>${escapeHtml(s.title || "Strategy")}</h3>
+            <p>${escapeHtml(s.description || "")}</p>
             <div>
-              <span class="tag">${escapeHtml(t("strategy.effort"))}: ${s.effort}</span>
-              <span class="tag">${escapeHtml(t("strategy.impact"))}: ${s.impact}</span>
-              <span class="tag">${escapeHtml(s.time_horizon)}</span>
-              <span class="tag">${escapeHtml(t("common.confidence"))}: ${formatPercent(s.confidence)}</span>
+              <span class="tag">${escapeHtml(t("strategy.effort"))}: ${escapeHtml(s.effort)}</span>
+              <span class="tag">${escapeHtml(t("strategy.impact"))}: ${escapeHtml(s.impact)}</span>
+              <span class="tag">${escapeHtml(s.time_horizon || "—")}</span>
+              <span class="tag">${escapeHtml(t("common.confidence"))}: ${escapeHtml(s.confidence != null ? formatPercent(s.confidence) : "—")}</span>
             </div>
           </div>`,
           )
@@ -451,17 +458,19 @@ function buildPdfSections(
   });
 
   // Priority plan
-  const priorityRows = (report.priority_action_plan ?? [])
-    .map(
-      (a) => `
+  const priorityRows = priorityPlan
+    .map((a) => {
+      const priority = a.priority || "P2";
+      const priorityClass = priority.toLowerCase();
+      return `
       <tr>
-        <td><span class="badge b-${a.priority.toLowerCase()}">${escapeHtml(a.priority)}</span></td>
-        <td><strong>${escapeHtml(a.title)}</strong><br/><span style="color:#6b7280">${escapeHtml(a.description)}</span></td>
-        <td>${escapeHtml(a.owner)}</td>
-        <td>${escapeHtml(a.timeframe)}</td>
-        <td>${escapeHtml(a.kpi)}</td>
-      </tr>`,
-    )
+        <td><span class="badge b-${priorityClass}">${escapeHtml(priority)}</span></td>
+        <td><strong>${escapeHtml(a.title || "Action")}</strong><br/><span style="color:#6b7280">${escapeHtml(a.description || "")}</span></td>
+        <td>${escapeHtml(a.owner || "—")}</td>
+        <td>${escapeHtml(a.timeframe || "—")}</td>
+        <td>${escapeHtml(a.kpi || "—")}</td>
+      </tr>`;
+    })
     .join("");
 
   sections.push({
@@ -483,18 +492,18 @@ function buildPdfSections(
   });
 
   // Resources
-  const totalCost = (report.resource_assessment ?? []).reduce(
+  const totalCost = resources.reduce(
     (sum, r) => sum + (r.estimated_cost_usd || 0),
     0,
   );
-  const resourceRows = (report.resource_assessment ?? [])
+  const resourceRows = resources
     .map(
       (r) => `
       <tr>
-        <td>${escapeHtml(r.resource_type)} — <strong>${escapeHtml(r.name)}</strong></td>
-        <td>${escapeHtml(r.current_state)} → ${escapeHtml(r.required_state)}</td>
-        <td><span class="badge">${escapeHtml(r.gap)}</span></td>
-        <td>${escapeHtml(formatCurrency(r.estimated_cost_usd))}</td>
+        <td>${escapeHtml(r.resource_type || "—")} — <strong>${escapeHtml(r.name || "Resource")}</strong></td>
+        <td>${escapeHtml(r.current_state || "—")} → ${escapeHtml(r.required_state || "—")}</td>
+        <td><span class="badge">${escapeHtml(r.gap || "—")}</span></td>
+        <td>${escapeHtml(formatCurrency(r.estimated_cost_usd || 0))}</td>
       </tr>`,
     )
     .join("");
